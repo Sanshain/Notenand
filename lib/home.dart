@@ -53,7 +53,6 @@ class HomePageState extends State<HomePage> {
             body: ValueListenableBuilder<List<Note>>(
                 valueListenable: entriesNotifier,
                 builder: (context, value, _) {
-                    // return Text("${value.length}");
                     return ListView.builder(
                         itemCount: value.length,
                         itemBuilder: (context, position) {
