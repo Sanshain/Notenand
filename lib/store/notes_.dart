@@ -1,5 +1,6 @@
 
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import '__data.dart';
 import 'notes.__notifier.dart';
 
@@ -33,3 +34,12 @@ extension NotesStateListExtension on Widget{
 }
 
 
+extension ProviderExtensions on Widget{
+    wrapProvider(List<Note> entriesList){
+
+        return Provider<List<Note>>(
+            create: (context) => entriesList,
+            child: this
+        );
+    }
+}

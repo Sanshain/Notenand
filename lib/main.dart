@@ -26,7 +26,7 @@ class App extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const HomePage(title: 'Notes'),
-    ).toNoteStore([]);
+    ).wrapProvider([]);
   }
 }
 

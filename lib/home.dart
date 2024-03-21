@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:note_hand/store/__data.dart';
 import 'package:note_hand/store/notes_.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -29,7 +30,7 @@ class HomePageState extends State<HomePage> {
     @override
     Widget build(BuildContext context) {
 
-        final entriesNotifier = EntriesState.of(context).entriesNotifier;
+        // final entriesNotifier = EntriesState.of(context).entriesNotifier;
 
         // The Flutter framework has been optimized to make rerunning build methods
         // fast, so that you can just rebuild anything that needs updating rather
@@ -39,37 +40,37 @@ class HomePageState extends State<HomePage> {
                 backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                 title: Text(widget.title),
             ),
-            // body: ListView.builder(
-            //     itemCount: notesAmount,
-            //     itemBuilder: (context, position) {
-            //         return Card(
-            //             child: Padding(
-            //                 padding: const EdgeInsets.all(16.0),
-            //                 child: Text(position.toString(), style: const TextStyle(fontSize: 22.0),),
-            //             ),
-            //         );
-            //     },
-            // ),
-            body: ValueListenableBuilder<List<Note>>(
-                valueListenable: entriesNotifier,
-                builder: (context, value, _) {
-                    return ListView.builder(
-                        itemCount: value.length,
-                        itemBuilder: (context, position) {
-                            return Card(
-                                child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Text(position.toString(), style: const TextStyle(fontSize: 22.0),),
-                                ),
-                            );
-                        },
+            body: ListView.builder(
+                itemCount: Provider.of<List<Note>>(context).length,
+                itemBuilder: (context, position) {
+                    return Card(
+                        child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(position.toString(), style: const TextStyle(fontSize: 22.0),),
+                        ),
                     );
                 },
             ),
+            // body: ValueListenableBuilder<List<Note>>(
+            //     valueListenable: entriesNotifier,
+            //     builder: (context, value, _) {
+            //         return ListView.builder(
+            //             itemCount: Provider.of<List<Note>>(context).length,
+            //             itemBuilder: (context, position) {
+            //                 return Card(
+            //                     child: Padding(
+            //                         padding: const EdgeInsets.all(16.0),
+            //                         child: Text(position.toString(), style: const TextStyle(fontSize: 22.0),),
+            //                     ),
+            //                 );
+            //             },
+            //         );
+            //     },
+            // ),
             floatingActionButton: FloatingActionButton(
                 // onPressed: _incrementCounter,
                 onPressed: (){
-                    entriesNotifier.add(Note(value: ''));
+                    // entriesNotifier.add(Note(value: ''));
                 },
                 tooltip: 'Increment',
                 child: const Icon(Icons.add),

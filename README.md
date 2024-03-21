@@ -21,3 +21,7 @@ flutter pub add ...
 
 Works fine, but hot reloading does not work on web app
 
+
+### Useful links:
+
+- [Working with Provider](https://www.8host.com/blog/upravlenie-sostoyaniem-flutter-s-pomoshhyu-provider/)
