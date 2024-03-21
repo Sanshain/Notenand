@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:note_hand/store/__data.dart';
 import 'package:note_hand/store/notes_.dart';
+import 'package:note_hand/store/provider_.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -41,7 +42,8 @@ class HomePageState extends State<HomePage> {
                 title: Text(widget.title),
             ),
             body: ListView.builder(
-                itemCount: Provider.of<List<Note>>(context).length,
+                // itemCount: Provider.of<List<Note>>(context).length,
+                itemCount: Provider.of<EntriesNotifier>(context).values.length,
                 itemBuilder: (context, position) {
                     return Card(
                         child: Padding(
@@ -71,6 +73,9 @@ class HomePageState extends State<HomePage> {
                 // onPressed: _incrementCounter,
                 onPressed: (){
                     // entriesNotifier.add(Note(value: ''));
+                    Provider.of<EntriesNotifier>(context, listen: false).add(
+                        Note(value: '')
+                    );
                 },
                 tooltip: 'Increment',
                 child: const Icon(Icons.add),
