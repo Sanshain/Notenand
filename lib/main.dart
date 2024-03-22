@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_hand/pages/note_Page.dart';
+import 'package:note_hand/store/__data.dart';
 import 'package:note_hand/store/provider_.dart';
 
 import 'home.dart';
@@ -8,7 +9,17 @@ import 'home.dart';
 
 
 void main() async {
-  await Hive.initFlutter();
+  // final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
+
+  // await Hive.initFlutter()
+  // Hive.registerAdapter(NoteAdapter());
+
+  await Hive.initFlutter().then((value) {
+
+    Hive.registerAdapter(NoteAdapter());
+  });
+
+  // Hive..initFlutter()..registerAdapter(NoteAdapter());
 
   runApp(const App());
 }

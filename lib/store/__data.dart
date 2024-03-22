@@ -1,6 +1,9 @@
 
 import 'package:hive_flutter/hive_flutter.dart';
 
+part '__data.g.dart';
+
+
 @HiveType(typeId: 0)
 class Note extends HiveObject{
 
