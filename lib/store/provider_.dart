@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -8,17 +10,19 @@ import '__data.dart';
 
 class EntriesNotifier extends ChangeNotifier {
     List<Note> values = List<Note>.from([]);
-    late Box<Note> database;
+    Box<Note>? database;
 
-    EntriesNotifier() : super() {
-        Hive.openBox<Note>('myBox').then((value) {
-            database = value;
+    Future<EntriesNotifier> init() async {
+        await Hive.openBox<Note>('entries').then((box) {
+            database = box;
+            values = database?.values.toList() ?? [];
         });
+        return this;
     }
 
     void add(Note note) {
         values.add(note);
-        database.add(note);
+        database?.add(note);
         notifyListeners();
     }
 }

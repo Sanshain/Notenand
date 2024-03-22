@@ -4,7 +4,7 @@
 
 ### Getting started
 
-Run to install pubspec app:
+Run to install pubspec modules:
 
 ```sh
 flutter pub get
@@ -22,10 +22,22 @@ Use to generate hive adapters:
 flutter packages pub run build_runner build --delete-conflicting-outputs
 ```
 
+## Use command to run in same port:
 
-## custom_value_notifier_$ branch:
+```
+flutter run -d chrome --web-port 5555
+```
 
-Works fine, but hot reloading does not work on web app
+## Use the command to release build on your device:
+
+```
+flutter run --release
+```
+
+## Another branches:
+
+- **custom_value_notifier_$**: works fine, but requires a little bit template code
+(ValueListenableBuilders)
 
 
 ### Useful links:

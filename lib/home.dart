@@ -6,6 +6,7 @@ import 'package:note_hand/pages/note_Page.dart';
 import 'package:note_hand/store/__data.dart';
 import 'package:note_hand/store/provider_.dart';
 import 'package:note_hand/utils/routes.dart';
+import 'package:note_hand/widgets/menu.dart';
 import 'package:provider/provider.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -46,6 +47,9 @@ class HomePageState extends State<HomePage> {
             appBar: AppBar(
                 backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                 title: Text(widget.title),
+                actions: const [
+                    Menu()
+                ],
             ),
             body: ListView.builder(
                 // itemCount: Provider.of<List<Note>>(context).length,

@@ -24,7 +24,7 @@ class EntryState extends State<EntryPage> {
 
   final borderStyle = OutlineInputBorder(
     borderRadius: BorderRadius.circular(20.0),
-    borderSide: const BorderSide(color: Colors.blue, width: 3.0),
+    borderSide: const BorderSide(color: Colors.white38, width: 3.0),
   );
 
   final _editorController = TextEditingController();
@@ -45,14 +45,21 @@ class EntryState extends State<EntryPage> {
               readOnly: readOnly,
               controller: _editorController,
               decoration: InputDecoration(
-                hintText: "Enter your very long text here",
+                hintText: "Enter your entry here...",
+                hintStyle: const TextStyle(
+                    fontSize: 18,
+                    color: Color.fromRGBO(99, 99, 99, .4)
+                ),
                 filled: true,
-                fillColor: Colors.green.shade100,
+                fillColor: Colors.blue.shade100,
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20.0),
-                  borderSide: BorderSide(color: Colors.lightBlueAccent.shade100, width: 3.0),
+                  borderSide: BorderSide(color: Colors.blue.shade200, width: 3.0),
                 ),
-                focusedBorder: borderStyle,
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColorLight, width: 3.0),
+                ),
               ),
               textAlignVertical: TextAlignVertical.top,
               keyboardType: TextInputType.multiline,
@@ -67,7 +74,7 @@ class EntryState extends State<EntryPage> {
           MaterialButton(
             minWidth: double.maxFinite,
             height: 60,
-            color: Colors.blue,
+            color: Colors.blue.shade200,
             onPressed: () {
               Provider.of<EntriesNotifier>(context, listen: false).add(
                   Note(value: _editorController.text)

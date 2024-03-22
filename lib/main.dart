@@ -21,11 +21,21 @@ void main() async {
 
   // Hive..initFlutter()..registerAdapter(NoteAdapter());
 
-  runApp(const App());
+  runApp(
+      App(
+          notifier: await (EntriesNotifier().init())
+      )
+  );
 }
 
+
 class App extends StatelessWidget {
-  const App({super.key});
+
+  final EntriesNotifier notifier;
+
+  const App({super.key, required this.notifier});
+
+  @override
 
   // This widget is the root of your application.
   @override
@@ -43,7 +53,7 @@ class App extends StatelessWidget {
         'note_screen': (context) => const EntryPage(),
       }
     ).wrapChangeProvider(
-        (context) => EntriesNotifier()
+        (context) => notifier
     );
   }
 }
