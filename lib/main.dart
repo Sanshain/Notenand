@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:note_hand/store/notes_.dart';
+import 'package:note_hand/pages/note_Page.dart';
 import 'package:note_hand/store/provider_.dart';
 
 import 'home.dart';
@@ -27,6 +27,10 @@ class App extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const HomePage(title: 'Notes'),
+      routes: {
+        'home_screen': (context) => const HomePage(),
+        'note_screen': (context) => const EntryPage(),
+      }
     ).wrapChangeProvider(
         (context) => EntriesNotifier()
     );
