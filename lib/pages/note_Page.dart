@@ -6,6 +6,7 @@ import 'package:styled_widget/styled_widget.dart';
 
 import '../store/__data.dart';
 import '../store/provider_.dart';
+import '../widgets/alerts/yesno.dart';
 
 class EntryPage extends StatefulWidget {
 
@@ -82,11 +83,23 @@ class EntryState extends State<EntryPage> {
             height: 60,
             // color: Colors.blue.shade200,
             color: Theme.of(context).secondaryHeaderColor,
-            onPressed: () {
-              Provider.of<EntriesNotifier>(context, listen: false).add(
-                  Note(value: _editorController.text)
-              );
-              Navigator.of(context).pop();
+            onPressed: () async {
+              if (_editorController.text.isNotEmpty){
+                Provider.of<EntriesNotifier>(context, listen: false).add(
+                    Note(value: _editorController.text)
+                );
+                Navigator.of(context).pop();
+              }
+              else{
+                bool? resp = await showConfirmDialog(
+                    context, text: 'The note is empty. Are you sure you want to exit?'
+                );
+                if (resp == true){
+                  if (context.mounted){
+                    Navigator.of(context).pop();
+                  }
+                }
+              }
             },
             shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0) ),
             // clipBehavior: Clip.antiAlias,
