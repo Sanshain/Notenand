@@ -45,12 +45,33 @@ class HomePageState extends State<HomePage> {
         // than having to individually change instances of widgets.
         return Scaffold(
             appBar: AppBar(
-                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,      // light gray
+                // backgroundColor: Theme.of(context).colorScheme.surfaceVariant,      // light gray
+                // backgroundColor: Theme.of(context).colorScheme.inverseSurface,      // dark mode
+                // backgroundColor: Theme.of(context).colorScheme.inversePrimary,   // violent
                 title: Text(widget.title),
                 actions: const [
                     Menu()
                 ],
             ),
+            // drawer: Drawer(
+            //     child: ListView(
+            //         children: [
+            //             const DrawerHeader(
+            //                 child: Text("Menu:"),
+            //                 // decoration: BoxDecoration(color: Colors.green),
+            //             ),
+            //             ListTile(
+            //                 title: const Text('Point'),
+            //                 leading: const Icon(Icons.home),
+            //                 // trailing: const Icon(Icons.arrow_downward),
+            //                 onTap: () {
+            //                     // Navigator.of(context).pop();
+            //                 },
+            //             ),
+            //         ],
+            //     ),
+            // ),
             body: ListView.builder(
                 // itemCount: Provider.of<List<Note>>(context).length,
                 itemCount: Provider.of<EntriesNotifier>(context).values.length,

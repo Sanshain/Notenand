@@ -35,30 +35,36 @@ class EntryState extends State<EntryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        // backgroundColor: Theme.of(context).secondaryHeaderColor,,
+        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+        // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('New note'),
       ),
       body: Column(
         children: [
           Flexible(
             child: TextField(
+              autofocus: true,
               readOnly: readOnly,
               controller: _editorController,
               decoration: InputDecoration(
                 hintText: "Enter your entry here...",
                 hintStyle: const TextStyle(
+                    fontWeight: FontWeight.w400,
                     fontSize: 18,
                     color: Color.fromRGBO(99, 99, 99, .4)
                 ),
                 filled: true,
-                fillColor: Colors.blue.shade100,
+                // fillColor: Colors.blue.shade100,
+                fillColor: Theme.of(context).colorScheme.background,
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20.0),
-                  borderSide: BorderSide(color: Colors.blue.shade200, width: 3.0),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColorLight, width: 1.0),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20.0),
-                  borderSide: BorderSide(color: Theme.of(context).primaryColorLight, width: 3.0),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColorLight, width: 1.5),
+                  // borderSide: BorderSide(color: Colors.blue.shade200, width: 3.0),
                 ),
               ),
               textAlignVertical: TextAlignVertical.top,
@@ -74,7 +80,8 @@ class EntryState extends State<EntryPage> {
           MaterialButton(
             minWidth: double.maxFinite,
             height: 60,
-            color: Colors.blue.shade200,
+            // color: Colors.blue.shade200,
+            color: Theme.of(context).secondaryHeaderColor,
             onPressed: () {
               Provider.of<EntriesNotifier>(context, listen: false).add(
                   Note(value: _editorController.text)

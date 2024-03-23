@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_hand/pages/note_Page.dart';
 import 'package:note_hand/store/__data.dart';
 import 'package:note_hand/store/provider_.dart';
+import 'package:provider/provider.dart';
 
 import 'home.dart';
 // import 'package:styled_widget/styled_widget.dart';
@@ -21,19 +22,13 @@ void main() async {
 
   // Hive..initFlutter()..registerAdapter(NoteAdapter());
 
-  runApp(
-      App(
-          notifier: await (EntriesNotifier().init())
-      )
-  );
+  runApp(App());
 }
 
 
 class App extends StatelessWidget {
 
-  final EntriesNotifier notifier;
-
-  const App({super.key, required this.notifier});
+  const App({super.key});
 
   @override
 
@@ -53,8 +48,13 @@ class App extends StatelessWidget {
         'note_screen': (context) => const EntryPage(),
       }
     ).wrapChangeProvider(
-        (context) => notifier
+        (context) => EntriesNotifier()
     );
+
+    // .multiProvider([
+    //     ChangeNotifierProvider<EntriesNotifier>(create: (context) => EntriesNotifier()),
+    // ]);
+
   }
 }
 

@@ -10,19 +10,19 @@ import '__data.dart';
 
 class EntriesNotifier extends ChangeNotifier {
     List<Note> values = List<Note>.from([]);
-    Box<Note>? database;
+    late Box<Note> database;
 
-    Future<EntriesNotifier> init() async {
-        await Hive.openBox<Note>('entries').then((box) {
+    EntriesNotifier() : super() {
+        Hive.openBox<Note>('entries').then((box) {
             database = box;
-            values = database?.values.toList() ?? [];
+            values = database.values.toList();
+            notifyListeners();
         });
-        return this;
     }
 
     void add(Note note) {
         values.add(note);
-        database?.add(note);
+        database.add(note);
         notifyListeners();
     }
 }
@@ -46,6 +46,14 @@ extension ProviderExtensions on Widget{
             /// => expected EntriesNotifier, but got _Type
             // create: (context) => (T as T Function())(),
             create: oncreate,
+            child: this
+        );
+    }
+
+    multiProvider(List<ChangeNotifierProvider> providers){
+
+        return MultiProvider(
+            providers: providers,
             child: this
         );
     }
