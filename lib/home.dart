@@ -6,6 +6,7 @@ import 'package:note_hand/pages/note_Page.dart';
 import 'package:note_hand/store/__data.dart';
 import 'package:note_hand/store/provider_.dart';
 import 'package:note_hand/utils/routes.dart';
+import 'package:note_hand/widgets/alerts/yesno.dart';
 import 'package:note_hand/widgets/menu.dart';
 import 'package:provider/provider.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -25,7 +26,9 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+
     int notesAmount = 3;
+    Set<int> selected = {};
 
     void _incrementCounter() {
         // setState(() {
@@ -50,8 +53,19 @@ class HomePageState extends State<HomePage> {
                 // backgroundColor: Theme.of(context).colorScheme.inverseSurface,      // dark mode
                 // backgroundColor: Theme.of(context).colorScheme.inversePrimary,   // violent
                 title: Text(widget.title),
-                actions: const [
-                    Menu()
+                actions: [
+                    Menu(extraPoints: [
+                        if (selected.isNotEmpty)
+                            PopupMenuItem(
+                                child: GestureDetector(
+                                    child: const Row(children: [Expanded(child: Text('Move to archive'),)]),
+                                    onTap: () async {
+                                        // final r = await showConfirmDialog(context, text: "Are you sure?");
+                                        // if (r == true){}
+                                    },
+                                )
+                            ),
+                    ],)
                 ],
             ),
             // drawer: Drawer(
@@ -82,16 +96,42 @@ class HomePageState extends State<HomePage> {
                     final title = note.value.substring(0, min(note.value.length, 25));
 
                     return Card(
+                        color: selected.contains(position) ? Colors.lightBlueAccent : null,
                         child: Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                                title + (title.length < note.value.length ? '...' : ''),
-                                style: const TextStyle(fontSize: 22.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    title + (title.length < note.value.length ? '...' : ''),
+                                    style: const TextStyle(fontSize: 22.0),
+                                ),
+                                Text(
+                                    note.time.toString().split(RegExp(":\\d+\\."))[0],
+                                    style: const TextStyle(fontSize: 13.0, color: Colors.grey),
+                                ),
+                              ],
                             ),
                         ),
                     ).gestures(
                         onTap: (){
-                            routeTo(context, screen: EntryPage(note: note,));
+                            if (selected.isNotEmpty){
+                                setState(() {
+                                    if (selected.contains(position)) {
+                                        selected.remove(position);
+                                    } else {
+                                        selected.add(position);
+                                    }
+                                });
+                            }
+                            else{
+                                routeTo(context, screen: EntryPage(note: note,));
+                            }
+                        },
+                        onLongPress: (){
+                            setState(() {
+                                selected.add(position);
+                            });
                         }
                     );
                 },

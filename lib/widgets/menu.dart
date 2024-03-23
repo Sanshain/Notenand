@@ -4,20 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 
-class Menu extends StatelessWidget{
+class Menu extends StatelessWidget {
 
-    const Menu({super.key});
+    final List<PopupMenuItem<Text>> extraPoints;
 
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<Text>(itemBuilder: (context) => [
-        PopupMenuItem(
-            child: GestureDetector(
-                child: const Row(children: [Expanded(child: Text('exit'),)]),
-                onTap: () => Platform.operatingSystem == 'android' ? SystemNavigator.pop() : exit(0),
-            )
-        ),
-    ]);
-  }
+    const Menu({super.key, this.extraPoints = const []});
+
+    @override
+    Widget build(BuildContext context) {
+        return PopupMenuButton<Text>(itemBuilder: (context) =>
+        [
+            ...extraPoints,
+            PopupMenuItem(
+                child: GestureDetector(
+                    child: const Row(children: [Expanded(child: Text('Exit'),)]),
+                    onTap: () => Platform.operatingSystem == 'android' ? SystemNavigator.pop() : exit(0),
+                )
+            ),
+        ]);
+    }
 
 }
