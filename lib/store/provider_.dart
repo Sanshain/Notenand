@@ -26,10 +26,23 @@ class EntriesNotifier extends ChangeNotifier {
         notifyListeners();
     }
 
-    void delete(List<Note> notes){
-        // values.removeWhere((note) => )
+    void remove(Set<int> selected){
+        for (var position in selected) {
+            values.removeAt(position);
+            database.deleteAt(position);
+        }
+        // values.removeWhere((note) {
+        //     if(selected.contains(note.id)){
+        //         database.delete(note);               // <--- that's problem (does not delete by key)
+        //         // database.deleteAt(index)          // <--- index is unknown here (may be i can separately iterate, but it can lead to any bugs (i guess))
+        //         return true;
+        //     }
+        //     return false;
+        // });
+        notifyListeners();
     }
 
+    /// call after object fields editing
     void update(Note note){
         notifyListeners();
         note.save();

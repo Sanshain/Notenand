@@ -41,7 +41,7 @@ class HomePageState extends State<HomePage> {
 
         // final entriesNotifier = EntriesState.of(context).entriesNotifier;
 
-        final entriesList = Provider.of<EntriesNotifier>(context).values;
+        final entriesList = Provider.of<EntriesNotifier>(context);
 
         // The Flutter framework has been optimized to make rerunning build methods
         // fast, so that you can just rebuild anything that needs updating rather
@@ -62,6 +62,8 @@ class HomePageState extends State<HomePage> {
                                     onTap: () async {
                                         // final r = await showConfirmDialog(context, text: "Are you sure?");
                                         // if (r == true){}
+                                        Provider.of<EntriesNotifier>(context, listen: false).remove(selected);
+                                        selected.clear();
                                         Navigator.of(context).pop();
                                     },
                                 )
@@ -92,11 +94,14 @@ class HomePageState extends State<HomePage> {
                 itemCount: Provider.of<EntriesNotifier>(context).values.length,
                 itemBuilder: (context, position) {
 
-                    final note = entriesList[position];
-                    // final line = note.value.split('\n')[0];
-                    final title = note.value.substring(0, min(note.value.length, 25));
+                    final note = entriesList.values[position];
+                    final firstline = note.value.split('\n')[0];
+                    final shortHand = min(firstline.length, 25);
+
+                    final title = firstline.substring(0, shortHand) + (firstline.length > shortHand ? '...' : '');
 
                     return Card(
+                        // color: selected.contains(entriesList.values[position].id) ? Colors.lightBlueAccent : null,
                         color: selected.contains(position) ? Colors.lightBlueAccent : null,
                         child: Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -117,11 +122,13 @@ class HomePageState extends State<HomePage> {
                     ).gestures(
                         onTap: (){
                             if (selected.isNotEmpty){
+                                // final id = entriesList.values[position].id;
+                                final id = position;
                                 setState(() {
-                                    if (selected.contains(position)) {
-                                        selected.remove(position);
+                                    if (selected.contains(id)) {
+                                        selected.remove(id);
                                     } else {
-                                        selected.add(position);
+                                        selected.add(id);
                                     }
                                 });
                             }
@@ -132,6 +139,7 @@ class HomePageState extends State<HomePage> {
                         onLongPress: (){
                             setState(() {
                                 selected.add(position);
+                                // selected.add(entriesList.values[position].id);
                             });
                         }
                     );
