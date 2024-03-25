@@ -25,6 +25,15 @@ class EntriesNotifier extends ChangeNotifier {
         database.add(note);
         notifyListeners();
     }
+
+    void delete(List<Note> notes){
+        // values.removeWhere((note) => )
+    }
+
+    void update(Note note){
+        notifyListeners();
+        note.save();
+    }
 }
 
 

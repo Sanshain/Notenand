@@ -72,7 +72,7 @@ class EntryState extends State<EntryPage> {
               keyboardType: TextInputType.multiline,
               expands: true,
               maxLines: null,
-            ).padding(vertical: 10).gestures(
+            ).padding(vertical: 5).gestures(
               onDoubleTap: (){
                 setState(() { readOnly = false; });
               }
@@ -84,13 +84,23 @@ class EntryState extends State<EntryPage> {
             // color: Colors.blue.shade200,
             color: Theme.of(context).secondaryHeaderColor,
             onPressed: () async {
-              if (_editorController.text.isNotEmpty){
-                Provider.of<EntriesNotifier>(context, listen: false).add(
-                    Note(value: _editorController.text)
-                );
+              if (_editorController.text.length > 1){
+                final entryStore = Provider.of<EntriesNotifier>(context, listen: false);
+
+                if (widget.note == null){
+                  /// create new
+                  entryStore.add(Note(value: _editorController.text));
+                }
+                else{
+                  /// change existing
+                  widget.note?.value = _editorController.text;
+                  entryStore.update(widget.note!);
+                }
+
                 Navigator.of(context).pop();
               }
               else{
+                /// is empty
                 bool? resp = await showConfirmDialog(
                     context, text: 'The note is empty. Are you sure you want to exit?'
                 );

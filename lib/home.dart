@@ -62,6 +62,7 @@ class HomePageState extends State<HomePage> {
                                     onTap: () async {
                                         // final r = await showConfirmDialog(context, text: "Are you sure?");
                                         // if (r == true){}
+                                        Navigator.of(context).pop();
                                     },
                                 )
                             ),
