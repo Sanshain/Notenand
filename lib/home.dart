@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:note_hand/pages/note_Page.dart';
 import 'package:note_hand/store/__data.dart';
-import 'package:note_hand/store/provider_.dart';
+import 'package:note_hand/store/providers_.dart';
 import 'package:note_hand/utils/routes.dart';
+import 'package:note_hand/widgets/alerts/input.dart';
 import 'package:note_hand/widgets/alerts/yesno.dart';
 import 'package:note_hand/widgets/menu.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +42,7 @@ class HomePageState extends State<HomePage> {
         // final entriesNotifier = EntriesState.of(context).entriesNotifier;
 
         final entriesList = Provider.of<EntriesNotifier>(context);
+        final categoriesList = Provider.of<CategoriesNotifier>(context);
 
         // The Flutter framework has been optimized to make rerunning build methods
         // fast, so that you can just rebuild anything that needs updating rather
@@ -71,24 +72,69 @@ class HomePageState extends State<HomePage> {
                     ],)
                 ],
             ),
-            // drawer: Drawer(
-            //     child: ListView(
-            //         children: [
-            //             const DrawerHeader(
-            //                 child: Text("Menu:"),
-            //                 // decoration: BoxDecoration(color: Colors.green),
-            //             ),
-            //             ListTile(
-            //                 title: const Text('Point'),
-            //                 leading: const Icon(Icons.home),
-            //                 // trailing: const Icon(Icons.arrow_downward),
-            //                 onTap: () {
-            //                     // Navigator.of(context).pop();
-            //                 },
-            //             ),
-            //         ],
-            //     ),
-            // ),
+            drawer: Drawer(
+                child: ListView(
+                    children: [
+                        DrawerHeader(
+                            padding: const EdgeInsets.all(60),
+                            // child: Text("Menu:"),
+                            // child: FloatingActionButton.extended(
+                            //     label: const Text('Add category'), // <-- Text
+                            //     backgroundColor: Colors.lightBlueAccent,
+                            //     icon: const Icon( // <-- Icon
+                            //         Icons.download,
+                            //         size: 24.0,
+                            //     ),
+                            //     onPressed: () {},
+                            // ),
+                            // child: Text("Menu:"),
+                            // child: FloatingActionButton.extended(
+                            //     label: const Text('Add category'), // <-- Text
+                            //     backgroundColor: Colors.lightBlueAccent,
+                            //     icon: const Icon( // <-- Icon
+                            //         Icons.download,
+                            //         size: 24.0,
+                            //     ),
+                            //     onPressed: () {},
+                            // ),
+                            child: MaterialButton(
+                                onPressed: () async {
+                                    final title = await showInputDialog(context, 'Enter new category title:');
+                                    if (title != null) {
+                                        final category = Category(title);
+                                        // category.save();
+                                        categoriesList.add(category);
+                                    }
+                                },
+                                color: Colors.orangeAccent,
+                                textColor: Colors.white,
+                                padding: const EdgeInsets.all(16),
+                                // shape: const CircleBorder(),
+                                shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(48.0) ),
+                                child: [
+                                    const Icon(Icons.add, size: 24,),
+                                    const Text('Add category'),
+                                ].toRow(mainAxisAlignment: MainAxisAlignment.center),
+                            ),
+                            // decoration: BoxDecoration(color: Colors.green),
+                        ),
+                        ...categoriesList.values.map((category) {
+                            return ListTile(
+                                title: Text(category.name),
+                                leading: const Icon(Icons.home),
+                                // trailing: const Icon(Icons.arrow_downward),
+                                onTap: () {
+                                    // go to
+
+                                    // TODO rename category in other menu
+                                    // TODO remove category in other menu if it does not consist of points
+                                    Navigator.of(context).pop();
+                                },
+                            );
+                        })
+                    ],
+                ),
+            ),
             body: ListView.builder(
                 // itemCount: Provider.of<List<Note>>(context).length,
                 itemCount: Provider.of<EntriesNotifier>(context).values.length,

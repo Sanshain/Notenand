@@ -8,17 +8,50 @@ import '__data.dart';
 
 
 
+class AbstractNotifier<T extends HiveObject> extends ChangeNotifier{
+    List<T> values = List.from([]);
+
+    late Box<T> database;
+
+    void add(T value) {
+        values.add(value);
+        database.add(value);
+        notifyListeners();
+    }
+
+    /// call after object fields editing
+    void update(Note note){
+        notifyListeners();
+        note.save();
+    }
+
+    void remove(int position){
+        values.removeAt(position);
+        database.deleteAt(position);
+        notifyListeners();
+    }
+}
+
+
 class EntriesNotifier extends ChangeNotifier {
     List<Note> values = List<Note>.from([]);
+
     late Box<Note> database;
 
     EntriesNotifier() : super() {
+
         Hive.openBox<Note>('entries').then((box) {
             database = box;
             values = database.values.toList();
             notifyListeners();
         });
     }
+
+    // void addCategory(Note note) {
+    //     values.add(note);
+    //     database.add(note);
+    //     notifyListeners();
+    // }
 
     void add(Note note) {
         values.add(note);
@@ -42,10 +75,20 @@ class EntriesNotifier extends ChangeNotifier {
         notifyListeners();
     }
 
-    /// call after object fields editing
     void update(Note note){
         notifyListeners();
         note.save();
+    }
+}
+
+
+class CategoriesNotifier extends AbstractNotifier<Category>{
+
+    CategoriesNotifier() : super(){
+        Hive.openBox<Category>('categories').then((box) {   // 1
+            values = (database = box).values.toList();
+            notifyListeners();
+        });
     }
 }
 

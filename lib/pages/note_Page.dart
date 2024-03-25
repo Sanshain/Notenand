@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:note_hand/widgets/extensions_.dart';
 import 'package:provider/provider.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import '../store/__data.dart';
-import '../store/provider_.dart';
+import '../store/providers_.dart';
 import '../widgets/alerts/yesno.dart';
 
 class EntryPage extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_hand/pages/note_Page.dart';
 import 'package:note_hand/store/__data.dart';
-import 'package:note_hand/store/provider_.dart';
+import 'package:note_hand/store/providers_.dart';
 import 'package:provider/provider.dart';
 
 import 'home.dart';
@@ -18,11 +18,12 @@ void main() async {
   await Hive.initFlutter().then((value) {
 
     Hive.registerAdapter(NoteAdapter());
+    Hive.registerAdapter(CategoryAdapter());
   });
 
   // Hive..initFlutter()..registerAdapter(NoteAdapter());
 
-  runApp(App());
+  runApp(const App());
 }
 
 
@@ -47,13 +48,14 @@ class App extends StatelessWidget {
         'home_screen': (context) => const HomePage(),
         'note_screen': (context) => const EntryPage(),
       }
-    ).wrapChangeProvider(
-        (context) => EntriesNotifier()
-    );
+    ).multiProvider([
+        ChangeNotifierProvider<EntriesNotifier>(create: (context) => EntriesNotifier()),
+        ChangeNotifierProvider<CategoriesNotifier>(create: (context) => CategoriesNotifier()),
+    ]);
 
-    // .multiProvider([
-    //     ChangeNotifierProvider<EntriesNotifier>(create: (context) => EntriesNotifier()),
-    // ]);
+    // .wrapChangeProvider(
+    //     (context) => EntriesNotifier()
+    // );
 
   }
 }

@@ -12,6 +12,7 @@ class Note extends HiveObject{
     @HiveField(2) String value = '';
 
     @HiveField(3) DateTime? lastTime;
+    @HiveField(4) Category? category;
 
     DateTime? _time;
 
@@ -24,4 +25,12 @@ class Note extends HiveObject{
         this.id = id ?? DateTime.now().microsecondsSinceEpoch;
         lastTime = lastTime ?? time;
     }
+}
+
+
+@HiveType(typeId: 1)
+class Category extends HiveObject{
+    @HiveField(1) String name;
+
+    Category(this.name);
 }
