@@ -5,8 +5,10 @@ import 'package:note_hand/pages/note_Page.dart';
 import 'package:note_hand/store/__data.dart';
 import 'package:note_hand/store/providers_.dart';
 import 'package:note_hand/utils/routes.dart';
+import 'package:note_hand/widgets/alerts/choice.dart';
 import 'package:note_hand/widgets/alerts/input.dart';
 import 'package:note_hand/widgets/alerts/yesno.dart';
+import 'package:note_hand/widgets/extensions_.dart';
 import 'package:note_hand/widgets/menu.dart';
 import 'package:provider/provider.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -42,6 +44,8 @@ class HomePageState extends State<HomePage> {
         // final entriesNotifier = EntriesState.of(context).entriesNotifier;
 
         final entriesList = Provider.of<EntriesNotifier>(context);
+        final entriesStore = Provider.of<EntriesNotifier>(context, listen: false);
+
         final categoriesList = Provider.of<CategoriesNotifier>(context);
 
         // The Flutter framework has been optimized to make rerunning build methods
@@ -59,13 +63,41 @@ class HomePageState extends State<HomePage> {
                         if (selected.isNotEmpty)
                             PopupMenuItem(
                                 child: GestureDetector(
-                                    child: const Row(children: [Expanded(child: Text('Move to archive'),)]),
+                                    child: const Row(children: [
+                                        Expanded(child: Text('Move to archive'),)]
+                                    ),
                                     onTap: () async {
                                         // final r = await showConfirmDialog(context, text: "Are you sure?");
                                         // if (r == true){}
-                                        Provider.of<EntriesNotifier>(context, listen: false).remove(selected);
+                                        entriesStore.remove(selected);
                                         selected.clear();
                                         Navigator.of(context).pop();
+                                    },
+                                )
+                            ),
+                        if (categoriesList.values.isNotEmpty && selected.isNotEmpty)
+                            PopupMenuItem(
+                                child: GestureDetector(
+                                    child: const Row(children: [Expanded(child: Text('To category'),)]),
+                                    onTap: () async {
+                                        final categoryName = await choiceDialog(
+                                            context, categoriesList.values.map((e) => e.name), title: 'Move to'
+                                        );
+                                        if (categoryName != null){
+                                            final selectedCategory = categoriesList.values.firstWhere(
+                                                    (cat) => cat.name == categoryName
+                                            );
+                                            for (final entry in selected) {
+                                                entriesList.values[entry].category = selectedCategory;
+                                                entriesList.values[entry].save();
+                                            }
+                                        }
+
+                                        selected.clear();
+
+                                        if (mounted){
+                                            Navigator.of(context).pop();
+                                        }
                                     },
                                 )
                             ),
@@ -99,7 +131,7 @@ class HomePageState extends State<HomePage> {
                             // ),
                             child: MaterialButton(
                                 onPressed: () async {
-                                    final title = await showInputDialog(context, 'Enter new category title:');
+                                    final title = await showInputDialog(context, 'Enter new category title');
                                     if (title != null) {
                                         final category = Category(title);
                                         // category.save();
@@ -117,7 +149,7 @@ class HomePageState extends State<HomePage> {
                                 ].toRow(mainAxisAlignment: MainAxisAlignment.center),
                             ),
                             // decoration: BoxDecoration(color: Colors.green),
-                        ),
+                        ).sized(height: 175),
                         ...categoriesList.values.map((category) {
                             return ListTile(
                                 title: Text(category.name),

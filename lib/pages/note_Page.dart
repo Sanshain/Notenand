@@ -45,7 +45,7 @@ class EntryState extends State<EntryPage> {
           Flexible(
             child: TextField(
               autofocus: true,
-              readOnly: readOnly,
+              // readOnly: readOnly,
               controller: _editorController,
               decoration: InputDecoration(
                 hintText: "Enter your entry here...",
@@ -72,9 +72,9 @@ class EntryState extends State<EntryPage> {
               expands: true,
               maxLines: null,
             ).padding(vertical: 5).gestures(
-              onDoubleTap: (){
-                setState(() { readOnly = false; });
-              }
+              // onDoubleTap: (){
+              //   setState(() { readOnly = false; });
+              // }
             ),
           ),
           MaterialButton(
@@ -84,18 +84,8 @@ class EntryState extends State<EntryPage> {
             color: Theme.of(context).secondaryHeaderColor,
             onPressed: () async {
               if (_editorController.text.length > 1){
-                final entryStore = Provider.of<EntriesNotifier>(context, listen: false);
 
-                if (widget.note == null){
-                  /// create new
-                  entryStore.add(Note(value: _editorController.text));
-                }
-                else{
-                  /// change existing
-                  widget.note?.value = _editorController.text;
-                  entryStore.update(widget.note!);
-                }
-
+                saveNote(context);
                 Navigator.of(context).pop();
               }
               else{
@@ -119,7 +109,23 @@ class EntryState extends State<EntryPage> {
           bottom: 15,
           left: 15, right: 15
       ),
-    );
+    ).popScope(context, (didPop) {
+        saveNote(context);
+    });
+  }
+
+  void saveNote(BuildContext context) {
+    final entryStore = Provider.of<EntriesNotifier>(context, listen: false);
+
+    if (widget.note == null){
+      /// create new
+      entryStore.add(Note(value: _editorController.text));
+    }
+    else{
+      /// change existing
+      widget.note?.value = _editorController.text;
+      entryStore.update(widget.note!);
+    }
   }
 
   @override

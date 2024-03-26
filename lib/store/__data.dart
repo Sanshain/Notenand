@@ -14,6 +14,8 @@ class Note extends HiveObject{
     @HiveField(3) DateTime? lastTime;
     @HiveField(4) Category? category;
 
+    @HiveField(5) bool isArchived = false;
+
     DateTime? _time;
 
     DateTime get time {
@@ -31,6 +33,9 @@ class Note extends HiveObject{
 @HiveType(typeId: 1)
 class Category extends HiveObject{
     @HiveField(1) String name;
+
+    /// codePoint
+    @HiveField(2) int? icon;
 
     Category(this.name);
 }
