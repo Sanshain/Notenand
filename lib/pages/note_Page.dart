@@ -28,7 +28,7 @@ class EntryState extends State<EntryPage> {
   );
 
   final _editorController = TextEditingController();
-  bool readOnly = false;
+  bool autofocus = false;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class EntryState extends State<EntryPage> {
         children: [
           Flexible(
             child: TextField(
-              autofocus: true,
+              autofocus: autofocus,
               // readOnly: readOnly,
               controller: _editorController,
               decoration: InputDecoration(
@@ -132,7 +132,7 @@ class EntryState extends State<EntryPage> {
   void initState() {
     super.initState();
     _editorController.text = widget.note?.value ?? '';
-    readOnly = widget.note != null;
+    autofocus = widget.note == null;
   }
 
   @override

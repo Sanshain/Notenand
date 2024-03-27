@@ -47,6 +47,7 @@ class HomePageState extends State<HomePage> {
         final entriesStore = Provider.of<EntriesNotifier>(context, listen: false);
 
         final categoriesList = Provider.of<CategoriesNotifier>(context);
+        Category? usedCategory;
 
         // The Flutter framework has been optimized to make rerunning build methods
         // fast, so that you can just rebuild anything that needs updating rather
@@ -149,7 +150,7 @@ class HomePageState extends State<HomePage> {
                                 ].toRow(mainAxisAlignment: MainAxisAlignment.center),
                             ),
                             // decoration: BoxDecoration(color: Colors.green),
-                        ).sized(height: 175),
+                        ).sized(height: 180),
                         ...categoriesList.values.map((category) {
                             return ListTile(
                                 title: Text(category.name),
@@ -173,6 +174,7 @@ class HomePageState extends State<HomePage> {
                 itemBuilder: (context, position) {
 
                     final note = entriesList.values[position];
+
                     final firstline = note.value.split('\n')[0];
                     final shortHand = min(firstline.length, 25);
 

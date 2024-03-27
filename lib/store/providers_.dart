@@ -64,6 +64,9 @@ class EntriesNotifier extends ChangeNotifier {
             values.removeAt(position);
             database.deleteAt(position);
         }
+
+
+
         // values.removeWhere((note) {
         //     if(selected.contains(note.id)){
         //         database.delete(note);               // <--- that's problem (does not delete by key)
