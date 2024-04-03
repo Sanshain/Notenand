@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +18,7 @@ class AbstractNotifier<T extends HiveObject> extends ChangeNotifier{
     }
 
     /// call after object fields editing
-    void update(Note note){
+    void update(T note){
         notifyListeners();
         note.save();
     }
@@ -60,11 +58,18 @@ class EntriesNotifier extends ChangeNotifier {
     }
 
     void remove(Set<int> selected){
-        for (var position in selected) {
-            values.removeAt(position);
-            database.deleteAt(position);
-        }
+        // for (var position in selected) {
+        //     values.removeAt(position);
+        //     database.deleteAt(position);
+        // }
 
+        final sortedSelected = selected.toList(growable: false)..sort((a, b) => a.compareTo(b));
+        for (int i = sortedSelected.length - 1; i >= 0; i--) { final id = sortedSelected[i];
+
+            int index = values.indexWhere((item) => item.id == id);
+            database.deleteAt(index);
+            values.removeAt(index);
+        }
 
 
         // values.removeWhere((note) {
@@ -82,6 +87,16 @@ class EntriesNotifier extends ChangeNotifier {
         notifyListeners();
         note.save();
     }
+
+    Iterable<Note> getByCategory({Category? category}){
+        if (category == null) { values = database.values.toList(); }
+        else{
+            values = database.values.where((entry) => entry.category == category).toList();
+        }
+        notifyListeners();
+        return values;
+    }
+
 }
 
 

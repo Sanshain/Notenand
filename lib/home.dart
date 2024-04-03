@@ -7,7 +7,6 @@ import 'package:note_hand/store/providers_.dart';
 import 'package:note_hand/utils/routes.dart';
 import 'package:note_hand/widgets/alerts/choice.dart';
 import 'package:note_hand/widgets/alerts/input.dart';
-import 'package:note_hand/widgets/alerts/yesno.dart';
 import 'package:note_hand/widgets/extensions_.dart';
 import 'package:note_hand/widgets/menu.dart';
 import 'package:provider/provider.dart';
@@ -29,8 +28,11 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
 
+    /// stated fields:
+
     int notesAmount = 3;
     Set<int> selected = {};
+    Category? usedCategory;
 
     void _incrementCounter() {
         // setState(() {
@@ -47,7 +49,6 @@ class HomePageState extends State<HomePage> {
         final entriesStore = Provider.of<EntriesNotifier>(context, listen: false);
 
         final categoriesList = Provider.of<CategoriesNotifier>(context);
-        Category? usedCategory;
 
         // The Flutter framework has been optimized to make rerunning build methods
         // fast, so that you can just rebuild anything that needs updating rather
@@ -58,9 +59,34 @@ class HomePageState extends State<HomePage> {
                 // backgroundColor: Theme.of(context).colorScheme.surfaceVariant,      // light gray
                 // backgroundColor: Theme.of(context).colorScheme.inverseSurface,      // dark mode
                 // backgroundColor: Theme.of(context).colorScheme.inversePrimary,   // violent
-                title: Text(widget.title),
+                title: Text(usedCategory?.name ?? widget.title),
                 actions: [
                     Menu(extraPoints: [
+                        if (usedCategory != null && selected.isEmpty)
+                            PopupMenuItem(
+                                child: GestureDetector(
+                                    child: const Row(children: [
+                                        Expanded(child: Text('Rename category'),)]
+                                    ),
+                                    onTap: () async {
+                                        final title = await showInputDialog(
+                                            context, 'Rename category', text: usedCategory?.name ?? ''
+                                        );
+                                        if (title != null){
+                                            usedCategory?.name = title;
+                                            categoriesList.update(usedCategory!);
+
+                                            // usedCategory?.save();
+
+                                            // // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
+                                            // categoriesList.notifyListeners();
+                                        }
+                                        if (mounted){
+                                            Navigator.of(context).pop();
+                                        }
+                                    },
+                                )
+                            ),
                         if (selected.isNotEmpty)
                             PopupMenuItem(
                                 child: GestureDetector(
@@ -88,13 +114,23 @@ class HomePageState extends State<HomePage> {
                                             final selectedCategory = categoriesList.values.firstWhere(
                                                     (cat) => cat.name == categoryName
                                             );
-                                            for (final entry in selected) {
-                                                entriesList.values[entry].category = selectedCategory;
-                                                entriesList.values[entry].save();
-                                            }
+
+                                            entriesList.values.where((e) => selected.contains(e.id)).forEach((entry) {
+                                                entry.category = selectedCategory;
+                                                entry.save();
+                                            });
+
+                                            // for (final entry in selected) {
+                                            //     entriesList.values.firstWhere((e) => e.id == entry);
+                                            //     // print(entry);
+                                            //     // entriesList.values[entry].category = selectedCategory;
+                                            //     // entriesList.values[entry].save();
+                                            // }
                                         }
 
-                                        selected.clear();
+                                        Future.delayed(const Duration(milliseconds: 350), (){
+                                            setState(() { selected.clear(); });
+                                        });
 
                                         if (mounted){
                                             Navigator.of(context).pop();
@@ -151,13 +187,32 @@ class HomePageState extends State<HomePage> {
                             ),
                             // decoration: BoxDecoration(color: Colors.green),
                         ).sized(height: 180),
-                        ...categoriesList.values.map((category) {
-                            return ListTile(
-                                title: Text(category.name),
+
+                        if (usedCategory != null)
+                            ListTile(
+                                title: const Text('All'),
                                 leading: const Icon(Icons.home),
                                 // trailing: const Icon(Icons.arrow_downward),
                                 onTap: () {
+
+                                    setState(() => usedCategory = null);
+                                    entriesList.values = entriesList.getByCategory(category: usedCategory).toList();
+
+                                    Navigator.of(context).pop();
+                                },
+                            ),
+                        ...categoriesList.values.map((category) {
+                            return ListTile(
+                                title: Text(category.name),
+                                // leading: const Icon(Icons.home),
+                                // trailing: const Icon(Icons.arrow_downward),
+                                onTap: () {
                                     // go to
+
+                                    entriesList.values = entriesList.getByCategory(category: category).toList();
+                                    Future.delayed(const Duration(microseconds: 50), (){
+                                        setState(() { usedCategory = category; });
+                                    });
 
                                     // TODO rename category in other menu
                                     // TODO remove category in other menu if it does not consist of points
@@ -181,8 +236,8 @@ class HomePageState extends State<HomePage> {
                     final title = firstline.substring(0, shortHand) + (firstline.length > shortHand ? '...' : '');
 
                     return Card(
-                        // color: selected.contains(entriesList.values[position].id) ? Colors.lightBlueAccent : null,
-                        color: selected.contains(position) ? Colors.lightBlueAccent : null,
+                        color: selected.contains(entriesList.values[position].id) ? Colors.lightBlueAccent : null,
+                        // color: selected.contains(position) ? Colors.lightBlueAccent : null,
                         child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
@@ -202,8 +257,8 @@ class HomePageState extends State<HomePage> {
                     ).gestures(
                         onTap: (){
                             if (selected.isNotEmpty){
-                                // final id = entriesList.values[position].id;
-                                final id = position;
+                                final id = entriesList.values[position].id;
+                                // final id = position;
                                 setState(() {
                                     if (selected.contains(id)) {
                                         selected.remove(id);
@@ -218,7 +273,9 @@ class HomePageState extends State<HomePage> {
                         },
                         onLongPress: (){
                             setState(() {
-                                selected.add(position);
+                                final id = entriesList.values[position].id;
+                                selected.add(id);
+                                // selected.add(position);
                                 // selected.add(entriesList.values[position].id);
                             });
                         }

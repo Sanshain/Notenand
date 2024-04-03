@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 
 
-Future<String?> showInputDialog(BuildContext context, String description, {String hint = '', String ok = 'OK'}) async {
+Future<String?> showInputDialog(BuildContext context, String description,
+    {String hint = '', String ok = 'OK', String text = ''}
+) async {
 
-    final textFieldController = TextEditingController();
+    final textFieldController = TextEditingController(text: text);
 
     return showDialog(
         context: context,
