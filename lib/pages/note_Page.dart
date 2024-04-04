@@ -38,7 +38,7 @@ class EntryState extends State<EntryPage> {
         // backgroundColor: Theme.of(context).secondaryHeaderColor,,
         backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
         // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('New note'),
+        title: Text(widget.note == null ? 'New note' : 'Editing...'),
       ),
       body: Column(
         children: [

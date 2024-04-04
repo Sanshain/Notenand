@@ -7,6 +7,7 @@ import 'package:note_hand/store/providers_.dart';
 import 'package:note_hand/utils/routes.dart';
 import 'package:note_hand/widgets/alerts/choice.dart';
 import 'package:note_hand/widgets/alerts/input.dart';
+import 'package:note_hand/widgets/alerts/yesno.dart';
 import 'package:note_hand/widgets/extensions_.dart';
 import 'package:note_hand/widgets/menu.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +34,7 @@ class HomePageState extends State<HomePage> {
     int notesAmount = 3;
     Set<int> selected = {};
     Category? usedCategory;
+    bool inArchive = false;
 
     void _incrementCounter() {
         // setState(() {
@@ -87,21 +89,26 @@ class HomePageState extends State<HomePage> {
                                     },
                                 )
                             ),
-                        if (selected.isNotEmpty)
+                        if (usedCategory != null && selected.isEmpty)
                             PopupMenuItem(
-                                child: GestureDetector(
-                                    child: const Row(children: [
-                                        Expanded(child: Text('Move to archive'),)]
-                                    ),
-                                    onTap: () async {
-                                        // final r = await showConfirmDialog(context, text: "Are you sure?");
-                                        // if (r == true){}
-                                        entriesStore.remove(selected);
-                                        selected.clear();
+                            child: GestureDetector(
+                                child: const Row(children: [
+                                    Expanded(child: Text('Remove category'),)]
+                                ),
+                                onTap: () async {
+                                    final affirmed = await showConfirmDialog(
+                                        context, text: 'Are tou sure you want to delete the category?',
+                                    );
+                                    if (affirmed == true){
+                                        categoriesList.remove(categoriesList.values.indexOf(usedCategory!));
+                                        setState(() { usedCategory = null; });
+                                    }
+                                    if (mounted){
                                         Navigator.of(context).pop();
-                                    },
-                                )
-                            ),
+                                    }
+                                },
+                            )
+                        ),
                         if (categoriesList.values.isNotEmpty && selected.isNotEmpty)
                             PopupMenuItem(
                                 child: GestureDetector(
@@ -117,7 +124,7 @@ class HomePageState extends State<HomePage> {
 
                                             entriesList.values.where((e) => selected.contains(e.id)).forEach((entry) {
                                                 entry.category = selectedCategory;
-                                                entry.save();
+                                                entriesList.update(entry);
                                             });
 
                                             // for (final entry in selected) {
@@ -132,6 +139,29 @@ class HomePageState extends State<HomePage> {
                                             setState(() { selected.clear(); });
                                         });
 
+                                        if (mounted){
+                                            Navigator.of(context).pop();
+                                        }
+                                    },
+                                )
+                            ),
+                        if (selected.isNotEmpty)
+                            PopupMenuItem(
+                                child: GestureDetector(
+                                    child: Row(children: [
+                                        Expanded(child: Text(inArchive ? 'Remove' : 'Move to archive'),)]
+                                    ),
+                                    onTap: () async {
+
+                                        if (inArchive) {
+                                            final r = await showConfirmDialog(context, text: 'Are you sure you want to remove the notes?');
+                                            if (r == true){ entriesStore.remove(selected); }
+                                        }
+                                        else{
+                                            entriesStore.moveToArchive(selected);
+                                        }
+
+                                        selected.clear();
                                         if (mounted){
                                             Navigator.of(context).pop();
                                         }
@@ -188,14 +218,17 @@ class HomePageState extends State<HomePage> {
                             // decoration: BoxDecoration(color: Colors.green),
                         ).sized(height: 180),
 
-                        if (usedCategory != null)
+                        if (usedCategory != null || inArchive)
                             ListTile(
                                 title: const Text('All'),
                                 leading: const Icon(Icons.home),
                                 // trailing: const Icon(Icons.arrow_downward),
                                 onTap: () {
 
-                                    setState(() => usedCategory = null);
+                                    setState(() {
+                                        usedCategory = null;
+                                        inArchive = false;
+                                    });
                                     entriesList.values = entriesList.getByCategory(category: usedCategory).toList();
 
                                     Navigator.of(context).pop();
@@ -210,8 +243,11 @@ class HomePageState extends State<HomePage> {
                                     // go to
 
                                     entriesList.values = entriesList.getByCategory(category: category).toList();
-                                    Future.delayed(const Duration(microseconds: 50), (){
-                                        setState(() { usedCategory = category; });
+                                    Future.delayed(const Duration(microseconds: 450), (){
+                                        setState(() {
+                                            usedCategory = category;
+                                            inArchive = false;
+                                        });
                                     });
 
                                     // TODO rename category in other menu
@@ -219,7 +255,27 @@ class HomePageState extends State<HomePage> {
                                     Navigator.of(context).pop();
                                 },
                             );
-                        })
+                        }),
+                        ListTile(
+                            title: const Text('Archive'),
+                            // textColor: Colors.grey,
+                            leading: const Icon(Icons.archive_outlined),
+                            // trailing: const Icon(Icons.arrow_downward),
+                            onTap: () {
+
+                                setState(() => usedCategory = null);
+                                entriesList.values = entriesList.getByCategory(
+                                    category: usedCategory,
+                                    isArchived: true
+                                ).toList();
+
+                                Future.delayed(const Duration(microseconds: 450), () {
+                                    setState(() { inArchive = true; });
+                                });
+
+                                Navigator.of(context).pop();
+                            },
+                        ),
                     ],
                 ),
             ),

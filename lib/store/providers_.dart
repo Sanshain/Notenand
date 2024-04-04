@@ -40,7 +40,7 @@ class EntriesNotifier extends ChangeNotifier {
 
         Hive.openBox<Note>('entries').then((box) {
             database = box;
-            values = database.values.toList();
+            values = database.values.where((entry) => entry.isArchived == false).toList();
             notifyListeners();
         });
     }
@@ -57,6 +57,23 @@ class EntriesNotifier extends ChangeNotifier {
         notifyListeners();
     }
 
+    void moveToArchive(Set<int> selected) {
+
+        final sortedSelected = selected.toList(growable: false)
+            ..sort((a, b) => a.compareTo(b));
+        for (int i = sortedSelected.length - 1; i >= 0; i--) {
+            final id = sortedSelected[i];
+            final movingNotes = values.where((item) => item.id == id).toList();
+
+            for (var note in movingNotes) {
+                note.isArchived = true;
+                values.remove(note);
+                note.save();
+            }
+        }
+        notifyListeners();
+    }
+
     void remove(Set<int> selected){
         // for (var position in selected) {
         //     values.removeAt(position);
@@ -66,9 +83,14 @@ class EntriesNotifier extends ChangeNotifier {
         final sortedSelected = selected.toList(growable: false)..sort((a, b) => a.compareTo(b));
         for (int i = sortedSelected.length - 1; i >= 0; i--) { final id = sortedSelected[i];
 
-            int index = values.indexWhere((item) => item.id == id);
+            int index = database.values.toList().indexWhere((item) {
+                if (item.id == id) {
+                    values.remove(item);
+                    return true;
+                }
+                return false;
+            });
             database.deleteAt(index);
-            values.removeAt(index);
         }
 
 
@@ -88,10 +110,19 @@ class EntriesNotifier extends ChangeNotifier {
         note.save();
     }
 
-    Iterable<Note> getByCategory({Category? category}){
-        if (category == null) { values = database.values.toList(); }
+    Iterable<Note> getByCategory({Category? category, bool isArchived = false}){
+        if (category == null) {
+
+            values = database.values
+                .where((note) => note.isArchived == isArchived)
+                .toList();
+        }
         else{
-            values = database.values.where((entry) => entry.category == category).toList();
+
+            values = database.values
+                .where((entry) => entry.isArchived == isArchived)
+                .where((entry) => entry.category == category)
+                .toList();
         }
         notifyListeners();
         return values;
