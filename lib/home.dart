@@ -286,20 +286,7 @@ class HomePageState extends State<HomePage> {
 
                     final note = entriesList.values[position];
 
-                    final firstline = note.value.split('\n')[0];
-                    final firstLetters = firstline.split(':')[0];
-                    // final shortedTitle = min(firstLetters.length, 25);
-
-                    var wholeTitle = '';
-                    final words = firstLetters.split(' ');
-                    for (var w in words) {
-                        wholeTitle += (wholeTitle.isNotEmpty ? ' ' : '') + w;
-                        if (wholeTitle.length > 25){
-                            wholeTitle += '...';
-                            break;
-                        }
-                    }
-                    final title = wholeTitle;
+                    final title = note.title;
 
                     // final title = firstline.substring(0, shortedTitle);
 
@@ -383,4 +370,5 @@ class HomePageState extends State<HomePage> {
             ), // This trailing comma makes auto-formatting nicer for build methods.
         );
     }
+
 }

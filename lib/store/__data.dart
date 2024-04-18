@@ -27,6 +27,28 @@ class Note extends HiveObject{
         this.id = id ?? DateTime.now().microsecondsSinceEpoch;
         lastTime = lastTime ?? time;
     }
+
+    String get title {
+        return Note.getTitle(value);
+    }
+
+
+    static String getTitle(String body){
+        final firstline = body.split('\n')[0];
+        final firstLetters = firstline.split(':')[0];
+        // final shortedTitle = min(firstLetters.length, 25);
+
+        var wholeTitle = '';
+        final words = firstLetters.split(' ');
+        for (var w in words) {
+            wholeTitle += (wholeTitle.isNotEmpty ? ' ' : '') + w;
+            if (wholeTitle.length > 25){
+                wholeTitle += '...';
+                break;
+            }
+        }
+        return wholeTitle;
+    }
 }
 
 

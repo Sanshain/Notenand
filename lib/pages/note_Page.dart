@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:note_hand/pages/settings_page.dart';
 import 'package:note_hand/widgets/extensions_.dart';
 import 'package:provider/provider.dart';
 import 'package:styled_widget/styled_widget.dart';
 
+// import 'package:mailer/mailer.dart';
+// import 'package:mailer/smtp_server.dart';
+
 import '../store/__data.dart';
 import '../store/providers_.dart';
+import '../widgets/alerts/input.dart';
 import '../widgets/alerts/yesno.dart';
 import '../widgets/menu.dart';
 
@@ -45,10 +51,14 @@ class EntryState extends State<EntryPage> {
                     )
                   ]),
                   onTap: () async {
+
+                    settingsDB = settingsDB ?? await Hive.openBox('settings');
+                    var recipient = settingsDB?.get('email') ?? '';
+
                     final Email email = Email(
-                      body: 'Email body',
-                      subject: 'Email subject',
-                      recipients: ['digital-mag@ya.ru'],
+                      body: _editorController.text,
+                      subject: Note.getTitle(_editorController.text),
+                      recipients: [recipient],
                       // cc: ['cc@example.com'],
                       isHTML: false,
                     );
