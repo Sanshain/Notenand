@@ -16,7 +16,15 @@ extension UIExtension on Widget{
         );
     }
 
-    popScope(context, Function(bool didPop) onPop, {bool canPop = false}){
+    Form toForm({GlobalKey<FormState>? key}) {
+        return Form(
+            // autovalidateMode: AutovalidateMode.onUserInteraction,
+            key: key,
+            child: this,
+        );
+    }
+
+    popScope(context, bool Function(bool didPop) onPop, {bool canPop = false}){
         // bool alreadyPopped = true;
         //
         // return PopScope(
@@ -29,8 +37,9 @@ extension UIExtension on Widget{
             canPop: false,
             onPopInvoked: (didPop) async {
                 if (didPop) return;
-                onPop(true);
-                Navigator.of(context).pop();
+                if (onPop(true)){
+                    Navigator.of(context).pop();
+                }
             },
 
             // canPop: true,

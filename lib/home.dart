@@ -287,9 +287,21 @@ class HomePageState extends State<HomePage> {
                     final note = entriesList.values[position];
 
                     final firstline = note.value.split('\n')[0];
-                    final shortHand = min(firstline.length, 25);
+                    final firstLetters = firstline.split(':')[0];
+                    // final shortedTitle = min(firstLetters.length, 25);
 
-                    final title = firstline.substring(0, shortHand) + (firstline.length > shortHand ? '...' : '');
+                    var wholeTitle = '';
+                    final words = firstLetters.split(' ');
+                    for (var w in words) {
+                        wholeTitle += (wholeTitle.isNotEmpty ? ' ' : '') + w;
+                        if (wholeTitle.length > 25){
+                            wholeTitle += '...';
+                            break;
+                        }
+                    }
+                    final title = wholeTitle;
+
+                    // final title = firstline.substring(0, shortedTitle);
 
                     return Card(
                         color: selected.contains(entriesList.values[position].id) ? Colors.lightBlueAccent : null,
@@ -300,7 +312,8 @@ class HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                    title + (title.length < note.value.length ? '...' : ''),
+                                    title,
+                                    // title[0].toUpperCase() + title.substring(1),
                                     style: const TextStyle(fontSize: 22.0),
                                 ),
                                 Text(
