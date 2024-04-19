@@ -11,6 +11,7 @@ import 'package:styled_widget/styled_widget.dart';
 
 import '../store/__data.dart';
 import '../store/providers_.dart';
+import '../widgets/alerts/choice.dart';
 import '../widgets/alerts/input.dart';
 import '../widgets/alerts/yesno.dart';
 import '../widgets/menu.dart';
@@ -35,6 +36,9 @@ class EntryState extends State<EntryPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final categoriesList = Provider.of<CategoriesNotifier>(context);
+
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Theme.of(context).secondaryHeaderColor,
@@ -42,30 +46,55 @@ class EntryState extends State<EntryPage> {
           // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(widget.note == null ? 'New note' : 'Editing...'),
           actions: [
-            PopupMenuButton<Text>(itemBuilder: (context) => [
+            PopupMenuButton<Text>(
+              itemBuilder: (context) => [
                 PopupMenuItem(
                     child: GestureDetector(
-                  child: const Row(children: [
-                    Expanded(
-                      child: Text('Save to email'),
+                      child: const Row(children: [
+                        Expanded(
+                          child: Text('Send to email'),
+                        )
+                      ]),
+                      onTap: () async {
+                        settingsDB = settingsDB ?? await Hive.openBox('settings');
+                        var recipient = settingsDB?.get('email') ?? '';
+
+                        final Email email = Email(
+                          body: _editorController.text,
+                          subject: Note.getTitle(_editorController.text),
+                          recipients: [recipient],
+                          // cc: ['cc@example.com'],
+                          isHTML: false,
+                        );
+
+                        FlutterEmailSender.send(email);
+                      },
                     )
-                  ]),
-                  onTap: () async {
+                ),
+                PopupMenuItem(
+                  child: const Text('Change category').gestures(
+                    onTap: () async {
+                      final categoryName = await choiceDialog(
+                          context, [...categoriesList.values.map((e) => e.name), '-----'], title: 'Move to'
+                      );
+                      if (categoryName != null) {
+                        if (categoryName != '-----'){
+                          final selectedCategory = categoriesList.values.firstWhere((cat) => cat.name == categoryName);
+                          widget.note?.category = selectedCategory;
+                        }
+                        else{
+                          widget.note?.category = null;
+                        }
 
-                    settingsDB = settingsDB ?? await Hive.openBox('settings');
-                    var recipient = settingsDB?.get('email') ?? '';
+                        widget.note?.save();
 
-                    final Email email = Email(
-                      body: _editorController.text,
-                      subject: Note.getTitle(_editorController.text),
-                      recipients: [recipient],
-                      // cc: ['cc@example.com'],
-                      isHTML: false,
-                    );
-
-                    FlutterEmailSender.send(email);
-                  },
-                )),
+                        if (mounted){
+                          Navigator.of(context).pop();
+                        }
+                      }
+                    }
+                  ),
+                )
               ],
             ),
           ]),

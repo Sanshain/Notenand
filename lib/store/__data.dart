@@ -28,7 +28,7 @@ class Note extends HiveObject{
         lastTime = lastTime ?? time;
     }
 
-    String get title {
+    String get thetitle {
         return Note.getTitle(value);
     }
 
@@ -60,4 +60,10 @@ class Category extends HiveObject{
     @HiveField(2) int? icon;
 
     Category(this.name);
+}
+
+
+@HiveType(typeId: 2)
+class Settings extends HiveObject{
+    @HiveField(1) bool showKindInList = true;
 }

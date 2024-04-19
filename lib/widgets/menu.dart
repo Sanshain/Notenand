@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:note_hand/pages/about_page.dart';
 import 'package:note_hand/pages/settings_page.dart';
 
 import 'package:note_hand/utils/routes.dart';
@@ -10,14 +11,14 @@ import 'package:note_hand/utils/routes.dart';
 class Menu extends StatelessWidget {
 
     final List<PopupMenuItem<Text>> extraPoints;
+    final bool hideBase;
 
-    const Menu({super.key, this.extraPoints = const []});
+    const Menu({super.key, this.hideBase = false, this.extraPoints = const []});
 
     @override
     Widget build(BuildContext context) {
-        return PopupMenuButton<Text>(itemBuilder: (context) =>
-        [
-            ...extraPoints,
+
+        final basePoints = <PopupMenuItem<Text>>[
             PopupMenuItem(
                 child: GestureDetector(
                     child: const Row(children: [Expanded(child: Text('Settings'),)]),
@@ -29,7 +30,9 @@ class Menu extends StatelessWidget {
             PopupMenuItem(
                 child: GestureDetector(
                     child: const Row(children: [Expanded(child: Text('About'),)]),
-                    onTap: () => Platform.operatingSystem == 'android' ? SystemNavigator.pop() : exit(0),
+                    onTap: () {
+                        routeTo(context, screen: const AboutPage());
+                    },
                 )
             ),
             PopupMenuItem(
@@ -38,6 +41,13 @@ class Menu extends StatelessWidget {
                     onTap: () => Platform.operatingSystem == 'android' ? SystemNavigator.pop() : exit(0),
                 )
             ),
+        ];
+
+        return PopupMenuButton<Text>(itemBuilder: (context) =>
+        [
+            ...extraPoints,
+            if (hideBase == false)
+                ...basePoints
         ]);
     }
 

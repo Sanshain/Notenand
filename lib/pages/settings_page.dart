@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:note_hand/widgets/extensions_.dart';
@@ -27,10 +28,13 @@ class SettingsPage extends StatefulWidget {
 class EntryState extends State<SettingsPage> {
 
     int attempts = 0;
+    /// for common form validation
     final _form = GlobalKey<FormState>();
 
     final emailController = TextEditingController();
     final FocusNode emailFocusNode = FocusNode();
+
+    Settings settings = Settings();
 
     @override
     void initState() {
@@ -46,8 +50,10 @@ class EntryState extends State<SettingsPage> {
         // autofocus = widget.note == null;
     }
 
+
     @override
     Widget build(BuildContext context) {
+
 
 
         return Scaffold(
@@ -75,7 +81,21 @@ class EntryState extends State<SettingsPage> {
                         ),
                     ).expanded(),
                 ]),
+                [
+                    const Text('Show category on list page (beta)'),
+                    CupertinoSwitch(
+                        value: settings.showKindInList,
+                        activeColor: Colors.lightBlueAccent,
+                        onChanged: (value) {
+                            setState(() {
+                                settings.showKindInList = value;
+                            });
+                        },
+                    ),
+                ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween).padding(top: 30),
+
                 const Expanded(child: Text('')),
+
                 MaterialButton(
                     minWidth: double.maxFinite,
                     height: 60,
@@ -92,6 +112,16 @@ class EntryState extends State<SettingsPage> {
                     // clipBehavior: Clip.antiAlias,
                     child: const Text("Save"), // Add This
                 ),
+                // CheckboxListTile(
+                //     title: Text("title text"),
+                //     value: true,
+                //     onChanged: (newValue) {
+                //         setState(() {
+                //             // checkedValue = newValue;
+                //         });
+                //     },
+                //     controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                // )
             ].toColumn().toForm(key: _form).padding(
                 bottom: 15,
                 left: 15, right: 15
