@@ -59,10 +59,10 @@ class HomePageState extends State<HomePage> {
         // backgroundColor: Theme.of(context).colorScheme.surfaceVariant,      // light gray
         // backgroundColor: Theme.of(context).colorScheme.inverseSurface,      // dark mode
         // backgroundColor: Theme.of(context).colorScheme.inversePrimary,   // violent
-        title: Text(usedCategory?.name ?? widget.title),
+        title: Text(usedCategory?.name ?? (inArchive ? 'Archive' : widget.title)),
         actions: [
           Menu(
-            hideBase: selected.isNotEmpty,
+            hideBase: selected.isNotEmpty || (usedCategory != null),
             extraPoints: [
               if (usedCategory != null && selected.isEmpty)
                 PopupMenuItem(
@@ -99,7 +99,9 @@ class HomePageState extends State<HomePage> {
                   onTap: () async {
                     final affirmed = await showConfirmDialog(
                       context,
-                      text: 'Are tou sure you want to delete the category?',
+                      text: 'Are tou sure you want to delete the category? ${entriesList.values.isNotEmpty
+                              ? '${entriesList.values.length} entries will be removed permanently!'
+                              : ''}',
                     );
                     if (affirmed == true) {
                       categoriesList.remove(categoriesList.values.indexOf(usedCategory!));
@@ -112,7 +114,7 @@ class HomePageState extends State<HomePage> {
                     }
                   },
                 )),
-              if (categoriesList.values.isNotEmpty && selected.isNotEmpty)
+              if (inArchive == false && categoriesList.values.isNotEmpty && selected.isNotEmpty)
                 PopupMenuItem(
                     child: GestureDetector(
                   child: const Row(children: [
@@ -149,30 +151,51 @@ class HomePageState extends State<HomePage> {
                     }
                   },
                 )),
-              if (selected.isNotEmpty)
+              if (selected.isNotEmpty) ...[
+                if (inArchive)
+                  PopupMenuItem(
+                      child: GestureDetector(
+                        child: const Row(children: [
+                          Expanded(
+                            child: Text('Back'),
+                          )
+                        ]),
+                        onTap: () async {
+
+                          entriesStore.moveToArchive(selected, back: true);
+                          selected.clear();
+
+                          if (mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                      )
+                  ),
                 PopupMenuItem(
                     child: GestureDetector(
-                  child: Row(children: [
-                    Expanded(
-                      child: Text(inArchive ? 'Remove' : 'Move to archive'),
-                    )
-                  ]),
-                  onTap: () async {
-                    if (inArchive) {
-                      final r = await showConfirmDialog(context, text: 'Are you sure you want to remove the notes?');
-                      if (r == true) {
-                        entriesStore.remove(selected);
-                      }
-                    } else {
-                      entriesStore.moveToArchive(selected);
-                    }
+                      child: Row(children: [
+                        Expanded(
+                          child: Text(inArchive ? 'Remove' : 'Move to archive'),
+                        )
+                      ]),
+                      onTap: () async {
+                        if (inArchive) {
+                          final r = await showConfirmDialog(context, text: 'Are you sure you want to remove the notes?');
+                          if (r == true) {
+                            entriesStore.remove(selected);
+                          }
+                        } else {
+                          entriesStore.moveToArchive(selected);
+                        }
 
-                    selected.clear();
-                    if (mounted) {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                )),
+                        selected.clear();
+                        if (mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    )
+                ),
+              ]
             ],
           )
         ],

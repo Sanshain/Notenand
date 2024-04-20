@@ -57,7 +57,7 @@ class EntriesNotifier extends ChangeNotifier {
         notifyListeners();
     }
 
-    void moveToArchive(Set<int> selected) {
+    void moveToArchive(Set<int> selected, {bool back = false}) {
 
         final sortedSelected = selected.toList(growable: false)
             ..sort((a, b) => a.compareTo(b));
@@ -66,7 +66,7 @@ class EntriesNotifier extends ChangeNotifier {
             final movingNotes = values.where((item) => item.id == id).toList();
 
             for (var note in movingNotes) {
-                note.isArchived = true;
+                note.isArchived = !back;
                 values.remove(note);
                 note.save();
             }

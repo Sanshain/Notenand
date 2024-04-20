@@ -6,6 +6,8 @@ import 'package:note_hand/pages/about_page.dart';
 import 'package:note_hand/pages/settings_page.dart';
 
 import 'package:note_hand/utils/routes.dart';
+import 'package:note_hand/widgets/extensions_.dart';
+import 'package:styled_widget/styled_widget.dart';
 
 
 class Menu extends StatelessWidget {
@@ -25,7 +27,7 @@ class Menu extends StatelessWidget {
                     onTap: () {
                         routeTo(context, screen: const SettingsPage());
                     },
-                )
+                ).expanded().toRow()
             ),
             PopupMenuItem(
                 child: GestureDetector(
@@ -33,13 +35,13 @@ class Menu extends StatelessWidget {
                     onTap: () {
                         routeTo(context, screen: const AboutPage());
                     },
-                )
+                ).expanded().toRow()
             ),
             PopupMenuItem(
                 child: GestureDetector(
                     child: const Row(children: [Expanded(child: Text('Exit'),)]),
                     onTap: () => Platform.operatingSystem == 'android' ? SystemNavigator.pop() : exit(0),
-                )
+                ).expanded().toRow()
             ),
         ];
 

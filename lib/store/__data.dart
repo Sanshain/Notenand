@@ -65,5 +65,8 @@ class Category extends HiveObject{
 
 @HiveType(typeId: 2)
 class Settings extends HiveObject{
-    @HiveField(1) bool showKindInList = true;
+    /// show categorised notes in a common notes list
+    @HiveField(1) bool showKindsInList = true;
+
+    @HiveField(2) String defaultCategory = '';
 }

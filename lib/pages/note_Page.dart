@@ -33,18 +33,30 @@ class EntryState extends State<EntryPage> {
 
   final _editorController = TextEditingController();
   bool autofocus = false;
+  String currentCategory = '';
+
+
 
   @override
   Widget build(BuildContext context) {
 
     final categoriesList = Provider.of<CategoriesNotifier>(context);
 
+    final note = widget.note;
+
+
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Theme.of(context).secondaryHeaderColor,
           // backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.note == null ? 'New note' : 'Editing...'),
+          title: Row(
+            children: [
+              Text(widget.note == null ? 'New note' : ('Editing...')), // $currentCategory
+              if (currentCategory.isNotEmpty)
+                Text(currentCategory, style: TextStyle(color: Colors.blue.shade200),),
+            ],
+          ),
           actions: [
             PopupMenuButton<Text>(
               itemBuilder: (context) => [
@@ -52,7 +64,7 @@ class EntryState extends State<EntryPage> {
                     child: GestureDetector(
                       child: const Row(children: [
                         Expanded(
-                          child: Text('Send to email'),
+                          child: Text('To email'),
                         )
                       ]),
                       onTap: () async {
@@ -81,9 +93,11 @@ class EntryState extends State<EntryPage> {
                         if (categoryName != '-----'){
                           final selectedCategory = categoriesList.values.firstWhere((cat) => cat.name == categoryName);
                           widget.note?.category = selectedCategory;
+                          setState(() { currentCategory = ' ($categoryName)'; });
                         }
                         else{
                           widget.note?.category = null;
+                          setState(() { currentCategory = ''; });
                         }
 
                         widget.note?.save();
@@ -182,6 +196,9 @@ class EntryState extends State<EntryPage> {
     super.initState();
     _editorController.text = widget.note?.value ?? '';
     autofocus = widget.note == null;
+    if (widget.note?.category != null){
+      currentCategory = ' (${widget.note?.category?.name ?? ''})';
+    }
   }
 
   @override
