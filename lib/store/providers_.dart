@@ -5,6 +5,30 @@ import 'package:provider/provider.dart';
 import '__data.dart';
 
 
+class SettingsNotifier extends ChangeNotifier{
+
+    Settings? state;
+
+    late Box<Settings> store;
+
+    SettingsNotifier({Future<Box<Settings>>? box}){
+
+        (box ?? Hive.openBox<Settings>('settings')).then((database) {
+            store = database;
+            state = database.get('settings');
+            if (state != null){
+                notifyListeners();
+            }
+        });
+    }
+
+    void update(){
+        notifyListeners();
+        state?.save();
+    }
+}
+
+
 
 class AbstractNotifier<T extends HiveObject> extends ChangeNotifier{
     List<T> values = List.from([]);

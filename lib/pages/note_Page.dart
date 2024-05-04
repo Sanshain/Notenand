@@ -68,8 +68,8 @@ class EntryState extends State<EntryPage> {
                         )
                       ]),
                       onTap: () async {
-                        settingsDB = settingsDB ?? await Hive.openBox('settings');
-                        var recipient = settingsDB?.get('email') ?? '';
+                        settingsDb = settingsDb ?? await Hive.openBox('settings');
+                        var recipient = settingsDb?.get('email') ?? '';
 
                         final Email email = Email(
                           body: _editorController.text,

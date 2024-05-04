@@ -19,6 +19,7 @@ void main() async {
 
     Hive.registerAdapter(NoteAdapter());
     Hive.registerAdapter(CategoryAdapter());
+    Hive.registerAdapter(SettingsAdapter());
   });
 
   // Hive..initFlutter()..registerAdapter(NoteAdapter());
@@ -51,6 +52,7 @@ class App extends StatelessWidget {
     ).multiProvider([
         ChangeNotifierProvider<EntriesNotifier>(create: (context) => EntriesNotifier()),
         ChangeNotifierProvider<CategoriesNotifier>(create: (context) => CategoriesNotifier()),
+        ChangeNotifierProvider<SettingsNotifier>(create: (context) => SettingsNotifier()),
     ]);
 
     // .wrapChangeProvider(

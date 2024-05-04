@@ -65,8 +65,14 @@ class Category extends HiveObject{
 
 @HiveType(typeId: 2)
 class Settings extends HiveObject{
-    /// show categorised notes in a common notes list
+    /// show categorised notes in a common notes list /showAll/
     @HiveField(1) bool showKindsInList = true;
 
     @HiveField(2) String defaultCategory = '';
+
+    @HiveField(3) String language = 'English';
+
+    @HiveField(4) String? email;
+
+    @HiveField(5) bool? darkTheme = false;
 }

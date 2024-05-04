@@ -25,6 +25,7 @@ class Menu extends StatelessWidget {
                 child: GestureDetector(
                     child: const Row(children: [Expanded(child: Text('Settings'),)]),
                     onTap: () {
+                        Navigator.of(context).pop();
                         routeTo(context, screen: const SettingsPage());
                     },
                 ).expanded().toRow()
