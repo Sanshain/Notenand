@@ -44,6 +44,7 @@ dependencies:
   flutter_email_sender: ^6.0.3
   mailer: ^6.1.0
   url_launcher: ^6.2.4
+  flutter_spinkit: ^5.2.1
 
 dev_dependencies:
   flutter_test:

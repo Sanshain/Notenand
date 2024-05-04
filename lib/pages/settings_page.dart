@@ -35,36 +35,33 @@ class EntryState extends State<SettingsPage> {
     final FocusNode emailFocusNode = FocusNode();
     final dropdownState = GlobalKey();
 
-    SettingsNotifier? settings;
+    SettingsNotifier? settingsStore;
 
     @override
     void initState() {
         super.initState();
 
-        settings = Provider.of<SettingsNotifier>(context);
-
-        // Hive.openBox('settings').then((data) {
-        //     settingsDb = data;
-        //     setState(() {
-        //         final storedSettings = settingsDb!.get('settings');
-        //         if (storedSettings == null){
-        //             settingsDb!.put('settings', settings);
-        //         }
-        //         else{
-        //             settings = storedSettings;
-        //         }
-        //         // emailController.text = settingsDb?.get('email') ?? '';
-        //         emailController.text = settings.email ?? '';
-        //     });
-        // });
+        // emailController.text = widget.note?.value ?? '';
 
         // autofocus = widget.note == null;
     }
 
     @override
+    void didChangeDependencies() {
+        // called after initState
+        super.didChangeDependencies();
+
+        settingsStore = Provider.of<SettingsNotifier>(context);
+
+        emailController.text = settingsStore?.state.email ?? '';
+    }
+
+    @override
     Widget build(BuildContext context) {
 
-        final settingsState = Provider.of<SettingsNotifier>(context);
+        // final settingsStore = Provider.of<SettingsNotifier>(context);
+        final settings = settingsStore!.state;
+
         final categoriesList = Provider.of<CategoriesNotifier>(context);
 
         return Scaffold(
@@ -98,12 +95,12 @@ class EntryState extends State<SettingsPage> {
                     const Text('Show entries just in their categories'),
                     CupertinoSwitch(
                         // value: settings.showKindsInList,
-                        value: settingsState.state?.showKindsInList ?? true,
+                        value: settings.showKindsInList ?? true,
                         activeColor: Colors.lightBlueAccent,
                         onChanged: (value) {
                             // setState(() { settings.showKindsInList = value; });
-                            settingsState.state?.showKindsInList = value;
-                            settingsState.update();
+                            settings.showKindsInList = value;
+                            settingsStore!.updateAll();
                         },
                     ),
                 ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween).padding(top: 30),
@@ -116,13 +113,13 @@ class EntryState extends State<SettingsPage> {
                         // DropdownButton
                         child: DropDownList([...categoriesList.values.map((v) => v.name), ''],
                             dropdownState: dropdownState,
-                            defaultValue: settingsState.state!.defaultCategory,
+                            defaultValue: settings.defaultCategory,
                             // defaultValue: settings.defaultCategory,
                             onChange: (_) {
                                 if (_ != null) {
                                     // setState(() { settings.defaultCategory = _ ?? ''; });
-                                    settingsState.state!.defaultCategory = _ ?? '';
-                                    settingsState.update();
+                                    settings.defaultCategory = _ ?? '';
+                                    settingsStore!.updateAll();
                                 }
                             },
                         )
@@ -135,8 +132,8 @@ class EntryState extends State<SettingsPage> {
 
                 DropDownField('Language', const ['English', 'Russian', ],
                     // defaultValue: settings.language,
-                    defaultValue: settingsState.state!.language,
-                    color: settingsState.state!.language == 'English' ? Colors.black38 : Colors.black,
+                    defaultValue: settings.language,
+                    color: settings.language == 'English' ? Colors.black38 : Colors.black,
                     onChange: (_) {
                         if (_ != null) {
                             // setState(() {
@@ -145,11 +142,26 @@ class EntryState extends State<SettingsPage> {
                             //     settings.save();
                             // });
 
-                            settingsState.state!.language = _;
-                            settingsState.update();
+                            settings.language = _;
+                            settingsStore!.updateAll();
                         }
                     },
                 ),
+
+                MaterialButton(
+                    minWidth: double.maxFinite,
+                    height: 50,
+                    color: Colors.white70,
+                    onPressed: () async {
+                        final r = await showConfirmDialog(context, text: "Are you sure you want to reset settings to default?");
+                        if (r == true){
+                            settingsStore?.reset();
+                        }
+                    },
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                    // clipBehavior: Clip.antiAlias,
+                    child: const Text("Reset"), // Add This
+                ).paddingDirectional(top: 30),
 
                 const Expanded(child: Text('')),
 
@@ -167,8 +179,8 @@ class EntryState extends State<SettingsPage> {
                             // settings.email = emailController.value.text;
                             // settings.save();
 
-                            settingsState.state?.email = emailController.value.text;
-                            settingsState.update();
+                            settings.email = emailController.value.text;
+                            settingsStore!.updateAll();
 
                             if (mounted){
                                 Navigator.of(context).pop();
@@ -201,8 +213,8 @@ class EntryState extends State<SettingsPage> {
                 //     return ++attempts > 1; // one attempt
                 // }
 
-                settingsState.state?.email = emailController.value.text;
-                settingsState.update();
+                settings.email = emailController.value.text;
+                settingsStore!.updateAll();
             }
             return true;
         });

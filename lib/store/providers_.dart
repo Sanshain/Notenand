@@ -7,24 +7,49 @@ import '__data.dart';
 
 class SettingsNotifier extends ChangeNotifier{
 
-    Settings? state;
+    Settings state = Settings();
+    bool loaded = false;
 
-    late Box<Settings> store;
+    static Box<Settings>? _store;
+    static Settings? _state;
 
     SettingsNotifier({Future<Box<Settings>>? box}){
 
+        if (_store != null) { state = _state!; loaded = true; notifyListeners(); return; }
+
         (box ?? Hive.openBox<Settings>('settings')).then((database) {
-            store = database;
-            state = database.get('settings');
-            if (state != null){
-                notifyListeners();
-            }
+            _store = database;
+
+            state = database.get('settings') ?? (() {
+                _store!.put('settings', state = Settings());
+                return state;
+            })();
+
+            loaded = true;
+            notifyListeners();
         });
     }
 
-    void update(){
+    void updateAll(){
         notifyListeners();
-        state?.save();
+        state.save();
+    }
+
+    void reset(){
+        _state = state = Settings();
+        _store?.put('settings', state);
+        notifyListeners();
+    }
+
+    static Future<Settings> read() async {
+        _store = _store ?? (await Hive.openBox<Settings>('settings'));
+        if (_store == null){
+            _store!.put('settings', _state = Settings());
+        }
+        else {
+            _state = _state ?? _store!.get('settings');
+        }
+        return _state!;
     }
 }
 
@@ -62,9 +87,18 @@ class EntriesNotifier extends ChangeNotifier {
 
     EntriesNotifier() : super() {
 
-        Hive.openBox<Note>('entries').then((box) {
+        Hive.openBox<Note>('entries').then((box) async {
             database = box;
+
             values = database.values.where((entry) => entry.isArchived == false).toList();
+
+            final settings = await SettingsNotifier.read();
+            if (settings.defaultCategory.isNotEmpty){
+                values = values
+                    .where((entry) => entry.category?.name == settings.defaultCategory)
+                    .toList();
+            }
+
             notifyListeners();
         });
     }
@@ -134,8 +168,8 @@ class EntriesNotifier extends ChangeNotifier {
         note.save();
     }
 
-    Iterable<Note> getByCategory({Category? category, bool isArchived = false}){
-        if (category == null) {
+    Iterable<Note> getByCategory({String? categoryName, bool isArchived = false}){
+        if (categoryName == null) {
 
             values = database.values
                 .where((note) => note.isArchived == isArchived)
@@ -145,7 +179,7 @@ class EntriesNotifier extends ChangeNotifier {
 
             values = database.values
                 .where((entry) => entry.isArchived == isArchived)
-                .where((entry) => entry.category == category)
+                .where((entry) => entry.category?.name == categoryName)
                 .toList();
         }
         notifyListeners();

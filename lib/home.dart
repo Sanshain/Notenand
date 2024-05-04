@@ -11,6 +11,7 @@ import 'package:note_hand/widgets/alerts/yesno.dart';
 import 'package:note_hand/widgets/extensions_.dart';
 import 'package:note_hand/widgets/menu.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -30,25 +31,45 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   /// stated fields:
 
+  bool initialized = false;
   int notesAmount = 3;
   Set<int> selected = {};
   Category? usedCategory;
   bool inArchive = false;
 
-  void _incrementCounter() {
-    // setState(() {
-    //     notesAmount++;
-    // });
+  SettingsNotifier? settingsStore;
+  late EntriesNotifier entriesList;
+  late CategoriesNotifier categoriesList;
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    settingsStore = Provider.of<SettingsNotifier>(context);
+
+    entriesList = Provider.of<EntriesNotifier>(context);
+
+    categoriesList = Provider.of<CategoriesNotifier>(context);
+
+    if (!initialized && settingsStore!.state.defaultCategory.isNotEmpty){
+
+      usedCategory = Category(settingsStore!.state.defaultCategory);
+      initialized = true;
+      // usedCategory = categoriesList.values.firstWhere((kind) => kind.name == settingsStore!.state.defaultCategory);
+      // entriesList.values = entriesList.getByCategory(categoryName: settingsStore!.state.defaultCategory).toList();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     // final entriesNotifier = EntriesState.of(context).entriesNotifier;
 
-    final entriesList = Provider.of<EntriesNotifier>(context);
-    final entriesStore = Provider.of<EntriesNotifier>(context, listen: false);
+    final settings = settingsStore!.state;
 
-    final categoriesList = Provider.of<CategoriesNotifier>(context);
+    // final entriesList = Provider.of<EntriesNotifier>(context);
+
+    final entriesStore = Provider.of<EntriesNotifier>(context, listen: false);
 
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
@@ -99,9 +120,8 @@ class HomePageState extends State<HomePage> {
                   onTap: () async {
                     final affirmed = await showConfirmDialog(
                       context,
-                      text: 'Are tou sure you want to delete the category? ${entriesList.values.isNotEmpty
-                              ? '${entriesList.values.length} entries will be removed permanently!'
-                              : ''}',
+                      text:
+                          'Are tou sure you want to delete the category? ${entriesList.values.isNotEmpty ? '${entriesList.values.length} entries will be removed permanently!' : ''}',
                     );
                     if (affirmed == true) {
                       categoriesList.remove(categoriesList.values.indexOf(usedCategory!));
@@ -155,46 +175,43 @@ class HomePageState extends State<HomePage> {
                 if (inArchive)
                   PopupMenuItem(
                       child: GestureDetector(
-                        child: const Row(children: [
-                          Expanded(
-                            child: Text('Back'),
-                          )
-                        ]),
-                        onTap: () async {
-
-                          entriesStore.moveToArchive(selected, back: true);
-                          selected.clear();
-
-                          if (mounted) {
-                            Navigator.of(context).pop();
-                          }
-                        },
+                    child: const Row(children: [
+                      Expanded(
+                        child: Text('Back'),
                       )
-                  ),
+                    ]),
+                    onTap: () async {
+                      entriesStore.moveToArchive(selected, back: true);
+                      selected.clear();
+
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  )),
                 PopupMenuItem(
                     child: GestureDetector(
-                      child: Row(children: [
-                        Expanded(
-                          child: Text(inArchive ? 'Remove' : 'Move to archive'),
-                        )
-                      ]),
-                      onTap: () async {
-                        if (inArchive) {
-                          final r = await showConfirmDialog(context, text: 'Are you sure you want to remove the notes?');
-                          if (r == true) {
-                            entriesStore.remove(selected);
-                          }
-                        } else {
-                          entriesStore.moveToArchive(selected);
-                        }
-
-                        selected.clear();
-                        if (mounted) {
-                          Navigator.of(context).pop();
-                        }
-                      },
+                  child: Row(children: [
+                    Expanded(
+                      child: Text(inArchive ? 'Remove' : 'Move to archive'),
                     )
-                ),
+                  ]),
+                  onTap: () async {
+                    if (inArchive) {
+                      final r = await showConfirmDialog(context, text: 'Are you sure you want to remove the notes?');
+                      if (r == true) {
+                        entriesStore.remove(selected);
+                      }
+                    } else {
+                      entriesStore.moveToArchive(selected);
+                    }
+
+                    selected.clear();
+                    if (mounted) {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                )),
               ]
             ],
           )
@@ -259,7 +276,7 @@ class HomePageState extends State<HomePage> {
                     usedCategory = null;
                     inArchive = false;
                   });
-                  entriesList.values = entriesList.getByCategory(category: usedCategory).toList();
+                  entriesList.values = entriesList.getByCategory(categoryName: usedCategory?.name).toList();
 
                   Navigator.of(context).pop();
                 },
@@ -272,7 +289,7 @@ class HomePageState extends State<HomePage> {
                 onTap: () {
                   // go to
 
-                  entriesList.values = entriesList.getByCategory(category: category).toList();
+                  entriesList.values = entriesList.getByCategory(categoryName: category?.name).toList();
                   Future.delayed(const Duration(microseconds: 450), () {
                     setState(() {
                       usedCategory = category;
@@ -293,7 +310,7 @@ class HomePageState extends State<HomePage> {
               // trailing: const Icon(Icons.arrow_downward),
               onTap: () {
                 setState(() => usedCategory = null);
-                entriesList.values = entriesList.getByCategory(category: usedCategory, isArchived: true).toList();
+                entriesList.values = entriesList.getByCategory(categoryName: usedCategory?.name, isArchived: true).toList();
 
                 Future.delayed(const Duration(microseconds: 450), () {
                   setState(() {
@@ -307,74 +324,79 @@ class HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: ListView.builder(
-        // itemCount: Provider.of<List<Note>>(context).length,
-        itemCount: Provider.of<EntriesNotifier>(context).values.length,
-        itemBuilder: (context, position) {
-          final note = entriesList.values[position];
+      body: settingsStore?.loaded != true
+          ? const SpinKitRotatingCircle(
+              color: Colors.white,
+              size: 50.0,
+            )
+          : ListView.builder(
+              // itemCount: Provider.of<List<Note>>(context).length,
+              itemCount: Provider.of<EntriesNotifier>(context).values.length,
+              itemBuilder: (context, position) {
+                final note = entriesList.values[position];
 
-          final title = note.thetitle;
+                final title = note.thetitle;
 
-          // final title = firstline.substring(0, shortedTitle);
+                // final title = firstline.substring(0, shortedTitle);
 
-          return Card(
-            color: selected.contains(entriesList.values[position].id) ? Colors.lightBlueAccent : null,
-            // color: selected.contains(position) ? Colors.lightBlueAccent : null,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    // title[0].toUpperCase() + title.substring(1),
-                    style: const TextStyle(fontSize: 22.0),
-                  ),
-                  [
-                      Text(
-                        note.time.toString().split(RegExp(":\\d+\\."))[0],
-                        style: const TextStyle(fontSize: 13.0, color: Colors.grey),
-                      ),
-                      if (note.category != null)
-                        Text(
-                          note.category?.name ?? '',
-                          style: const TextStyle(fontSize: 13.0, color: Colors.black26),
-                        ).padding(horizontal: 10).decorated(
-                            borderRadius: const BorderRadius.all(Radius.circular(20)),
-                            color: Colors.blue.shade100
-                        ),
-
-                  ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
-                ],
-              ),
-            ),
-          ).gestures(onTap: () {
-            if (selected.isNotEmpty) {
-              final id = entriesList.values[position].id;
-              // final id = position;
-              setState(() {
-                if (selected.contains(id)) {
-                  selected.remove(id);
-                } else {
-                  selected.add(id);
+                if (settings.showKindsInList && usedCategory == null && note.category != null) {
+                  return const SizedBox(height: 0);
                 }
-              });
-            } else {
-              routeTo(context,
-                  screen: EntryPage(
-                    note: note,
-                  ));
-            }
-          }, onLongPress: () {
-            setState(() {
-              final id = entriesList.values[position].id;
-              selected.add(id);
-              // selected.add(position);
-              // selected.add(entriesList.values[position].id);
-            });
-          });
-        },
-      ),
+
+                return Card(
+                  color: selected.contains(entriesList.values[position].id) ? Colors.lightBlueAccent : null,
+                  // color: selected.contains(position) ? Colors.lightBlueAccent : null,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          // title[0].toUpperCase() + title.substring(1),
+                          style: const TextStyle(fontSize: 22.0),
+                        ),
+                        [
+                          Text(
+                            note.time.toString().split(RegExp(":\\d+\\."))[0],
+                            style: const TextStyle(fontSize: 13.0, color: Colors.grey),
+                          ),
+                          if (note.category != null)
+                            Text(
+                              note.category?.name ?? '',
+                              style: const TextStyle(fontSize: 13.0, color: Colors.black26),
+                            ).padding(horizontal: 10).decorated(borderRadius: const BorderRadius.all(Radius.circular(20)), color: Colors.blue.shade100),
+                        ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween),
+                      ],
+                    ),
+                  ),
+                ).gestures(onTap: () {
+                  if (selected.isNotEmpty) {
+                    final id = entriesList.values[position].id;
+                    // final id = position;
+                    setState(() {
+                      if (selected.contains(id)) {
+                        selected.remove(id);
+                      } else {
+                        selected.add(id);
+                      }
+                    });
+                  } else {
+                    routeTo(context,
+                        screen: EntryPage(
+                          note: note,
+                        ));
+                  }
+                }, onLongPress: () {
+                  setState(() {
+                    final id = entriesList.values[position].id;
+                    selected.add(id);
+                    // selected.add(position);
+                    // selected.add(entriesList.values[position].id);
+                  });
+                });
+              },
+            ),
       // body: ValueListenableBuilder<List<Note>>(
       //     valueListenable: entriesNotifier,
       //     builder: (context, value, _) {
