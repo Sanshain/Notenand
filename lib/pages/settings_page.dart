@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:note_hand/main.dart';
 import 'package:note_hand/utils/langs.dart';
 import 'package:note_hand/widgets/extensions_.dart';
 import 'package:provider/provider.dart';
@@ -77,7 +78,7 @@ class EntryState extends State<SettingsPage> {
                 backgroundColor: Theme
                     .of(context)
                     .secondaryHeaderColor,
-                title: const Text('Settings'),
+                title: Text(AppLocalizations.of(context)!.settingsTitle),
             ),
             body: <Widget>[
                 Row(children: <Widget>[
@@ -91,16 +92,16 @@ class EntryState extends State<SettingsPage> {
                         validator: validateEmail,
 
                         style: const TextStyle(color: Colors.blueGrey),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                             // hintStyle: TextStyle(fontSize: 20.0, color: Colors.redAccent),
                             // hintText: 'Enter valid e-mail',
-                            labelText: 'Enter e-mail',
+                            labelText: AppLocalizations.of(context)!.settings__emailPlaceholder, // 'Enter e-mail'
                         ),
                     ).expanded(),
                 ]),
                 [
                     // const Text('Show category on list page (beta)'),
-                    const Text('Show entries just in their categories'),
+                    Text(AppLocalizations.of(context)!.settings__uncategorizedList),
                     CupertinoSwitch(
                         // value: settings.showKindsInList,
                         value: settings.showKindsInList ?? true,
@@ -114,7 +115,8 @@ class EntryState extends State<SettingsPage> {
                 ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween).padding(top: 30),
 
                 [
-                    const Text('Default opening category'),
+                    // const Text('Default opening category'),
+                    Text(AppLocalizations.of(context)!.settings__defaultCategory),
                     SizedBox(
                         width: 120,
                         // DropdownButtonFormField
@@ -134,11 +136,13 @@ class EntryState extends State<SettingsPage> {
                     ),
                 ].toRow(mainAxisAlignment: MainAxisAlignment.spaceBetween).padding(top: 30),
 
-                SwitchField('Dark theme', defaultValue: false, onChange: (v){
+                SwitchField(AppLocalizations.of(context)!.settings__darkTheme, // 'Dark theme',
+                    defaultValue: false, onChange: (v){
 
-                },),
+                    },
+                ),
 
-                DropDownField('Language', languages.values.toList(),
+                DropDownField(AppLocalizations.of(context)!.settings__language, languages.values.toList(), // 'language'
                     // defaultValue: settings.language,
                     defaultValue: settings.language.isEmpty ? languages[localeName]! : settings.language,
                     // defaultValue: AppLocalizations.of(context)?.localeName,
@@ -158,9 +162,9 @@ class EntryState extends State<SettingsPage> {
                                 settings.language.substring(0, 2).toLowerCase()
                             );
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Required to reload app to apply language changing'))
-                            );
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //     const SnackBar(content: Text('Required to reload app to apply language changing'))
+                            // );
                         }
                     },
                 ),
@@ -177,7 +181,8 @@ class EntryState extends State<SettingsPage> {
                     },
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                     // clipBehavior: Clip.antiAlias,
-                    child: const Text("Reset"), // Add This
+                    // child: const Text("Reset"), // Add This
+                    child: Text(AppLocalizations.of(context)!.settings__resetButton), // Add This
                 ).paddingDirectional(top: 30),
 
                 const Expanded(child: Text('')),
@@ -206,7 +211,8 @@ class EntryState extends State<SettingsPage> {
                     },
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22.0)),
                     // clipBehavior: Clip.antiAlias,
-                    child: const Text("Save"), // Add This
+                    // child: const Text("Save"), // Add This
+                    child: Text(AppLocalizations.of(context)!.settings__saveButton), // Add This
                 ),
                 // CheckboxListTile(
                 //     title: Text("title text"),

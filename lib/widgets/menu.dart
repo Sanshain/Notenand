@@ -2,12 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:note_hand/generated/l10n.dart';
 import 'package:note_hand/pages/about_page.dart';
 import 'package:note_hand/pages/settings_page.dart';
 
 import 'package:note_hand/utils/routes.dart';
 import 'package:note_hand/widgets/extensions_.dart';
 import 'package:styled_widget/styled_widget.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class Menu extends StatelessWidget {
@@ -23,7 +26,9 @@ class Menu extends StatelessWidget {
         final basePoints = <PopupMenuItem<Text>>[
             PopupMenuItem(
                 child: GestureDetector(
-                    child: const Row(children: [Expanded(child: Text('Settings'),)]),
+                    child: Row(children: [Expanded(child: Text(
+                        AppLocalizations.of(context)?.settingsTitle ?? 'Settings'
+                    ),)]),
                     onTap: () {
                         Navigator.of(context).pop();
                         routeTo(context, screen: const SettingsPage());
@@ -32,7 +37,9 @@ class Menu extends StatelessWidget {
             ),
             PopupMenuItem(
                 child: GestureDetector(
-                    child: const Row(children: [Expanded(child: Text('About'),)]),
+                    child: Row(children: [Expanded(child: Text(
+                        AppLocalizations.of(context)?.aboutTitle ?? 'About'
+                    ),)]),
                     onTap: () {
                         routeTo(context, screen: const AboutPage());
                     },
@@ -40,7 +47,9 @@ class Menu extends StatelessWidget {
             ),
             PopupMenuItem(
                 child: GestureDetector(
-                    child: const Row(children: [Expanded(child: Text('Exit'),)]),
+                    child: Row(children: [Expanded(child: Text(
+                        AppLocalizations.of(context)?.exitButton ?? 'Exit'
+                    ),)]),
                     onTap: () => Platform.operatingSystem == 'android' ? SystemNavigator.pop() : exit(0),
                 ).expanded().toRow()
             ),

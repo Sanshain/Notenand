@@ -16,7 +16,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key, this.title = 'Notes'});
 
@@ -44,7 +43,6 @@ class HomePageState extends State<HomePage> {
   late EntriesNotifier entriesList;
   late CategoriesNotifier categoriesList;
 
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -55,8 +53,7 @@ class HomePageState extends State<HomePage> {
 
     categoriesList = Provider.of<CategoriesNotifier>(context);
 
-    if (!initialized && settingsStore!.state.defaultCategory.isNotEmpty){
-
+    if (!initialized && settingsStore!.state.defaultCategory.isNotEmpty) {
       usedCategory = Category(settingsStore!.state.defaultCategory);
       initialized = true;
       // usedCategory = categoriesList.values.firstWhere((kind) => kind.name == settingsStore!.state.defaultCategory);
@@ -74,6 +71,8 @@ class HomePageState extends State<HomePage> {
 
     final entriesStore = Provider.of<EntriesNotifier>(context, listen: false);
 
+    final localDiction = AppLocalizations.of(context);
+
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
@@ -83,11 +82,7 @@ class HomePageState extends State<HomePage> {
         // backgroundColor: Theme.of(context).colorScheme.surfaceVariant,      // light gray
         // backgroundColor: Theme.of(context).colorScheme.inverseSurface,      // dark mode
         // backgroundColor: Theme.of(context).colorScheme.inversePrimary,   // violent
-        title: Text(
-            usedCategory?.name ?? (
-                inArchive ? 'Archive' : (AppLocalizations.of(context)?.appTitle ?? widget.title)
-            )
-        ),
+        title: Text(usedCategory?.name ?? (inArchive ? (localDiction?.archive ?? 'Archive') : (AppLocalizations.of(context)?.appTitle ?? widget.title))),
         actions: [
           Menu(
             hideBase: selected.isNotEmpty || (usedCategory != null),
@@ -95,27 +90,46 @@ class HomePageState extends State<HomePage> {
               if (usedCategory != null && selected.isEmpty)
                 PopupMenuItem(
                     child: GestureDetector(
-                  child: const Row(children: [
-                    Expanded(
-                      child: Text('Rename category'),
-                    )
-                  ]),
-                  onTap: () async {
-                    final title = await showInputDialog(context, 'Rename category', text: usedCategory?.name ?? '');
-                    if (title != null) {
-                      usedCategory?.name = title;
-                      categoriesList.update(usedCategory!);
+                      child: const Row(children: [
+                        Icon(Icons.arrow_back, color: Colors.blue,),
+                        Expanded(
+                          child: Text('  Back'),
+                        )
+                      ]),
+                      onTap: () {
+                        setState(() {
+                          usedCategory = null;
+                        });
+                        entriesList.values = entriesList.getByCategory(categoryName: usedCategory?.name).toList();
 
-                      // usedCategory?.save();
+                        Navigator.of(context).pop();
+                      }
+                    )),
+              if (usedCategory != null && selected.isEmpty)
+                PopupMenuItem(
+                    child: GestureDetector(
+                      child: const Row(children: [
+                        Expanded(
+                          child: Text('Rename category'),
+                        )
+                      ]),
+                      onTap: () async {
+                        final title = await showInputDialog(context, 'Rename category', text: usedCategory?.name ?? '');
+                        if (title != null) {
+                          usedCategory?.name = title;
+                          categoriesList.update(usedCategory!);
 
-                      // // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
-                      // categoriesList.notifyListeners();
-                    }
-                    if (mounted) {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                )),
+                          // usedCategory?.save();
+
+                          // // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
+                          // categoriesList.notifyListeners();
+                        }
+                        if (mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                  )
+                ),
               if (usedCategory != null && selected.isEmpty)
                 PopupMenuItem(
                     child: GestureDetector(
@@ -268,14 +282,16 @@ class HomePageState extends State<HomePage> {
                     Icons.add,
                     size: 24,
                   ),
-                  const Text('Add category'),
+                  // const Text('Add category'),
+                  Text(AppLocalizations.of(context)?.addCategoryButton ?? 'Add category'),
                 ].toRow(mainAxisAlignment: MainAxisAlignment.center),
               ),
               // decoration: BoxDecoration(color: Colors.green),
             ).sized(height: 180),
             if (usedCategory != null || inArchive)
               ListTile(
-                title: const Text('All'),
+                // title: const Text('All'),
+                title: Text(localDiction?.all ?? 'All'),
                 leading: const Icon(Icons.home),
                 // trailing: const Icon(Icons.arrow_downward),
                 onTap: () {
@@ -311,7 +327,8 @@ class HomePageState extends State<HomePage> {
               );
             }),
             ListTile(
-              title: const Text('Archive'),
+              // title: const Text('Archive'),
+              title: Text(localDiction?.archive ?? "Archive"),
               // textColor: Colors.grey,
               leading: const Icon(Icons.archive_outlined),
               // trailing: const Icon(Icons.arrow_downward),

@@ -6,6 +6,8 @@ import 'package:note_hand/widgets/extensions_.dart';
 import 'package:provider/provider.dart';
 import 'package:styled_widget/styled_widget.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 // import 'package:mailer/mailer.dart';
 // import 'package:mailer/smtp_server.dart';
 
@@ -52,7 +54,9 @@ class EntryState extends State<EntryPage> {
           // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Row(
             children: [
-              Text(widget.note == null ? 'New note' : ('Editing...')), // $currentCategory
+              Text(widget.note == null
+                  ? AppLocalizations.of(context)!.newNote // 'New note'
+                  : (AppLocalizations.of(context)!.editing ?? 'Editing...')), // $currentCategory
               if (currentCategory.isNotEmpty)
                 Text(currentCategory, style: TextStyle(color: Colors.blue.shade200),),
             ],
@@ -120,7 +124,8 @@ class EntryState extends State<EntryPage> {
               // readOnly: readOnly,
               controller: _editorController,
               decoration: InputDecoration(
-                hintText: "Enter your entry here...",
+                // hintText: "Enter your entry here...",
+                hintText: AppLocalizations.of(context)!.noteEditPlaceholder,
                 hintStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 18, color: Color.fromRGBO(99, 99, 99, .4)),
                 filled: true,
                 // fillColor: Colors.blue.shade100,
@@ -166,7 +171,8 @@ class EntryState extends State<EntryPage> {
             },
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22.0)),
             // clipBehavior: Clip.antiAlias,
-            child: const Text("Save"), // Add This
+            // child: const Text("Save"), // Add This
+            child: Text(AppLocalizations.of(context)!.settings__saveButton), // Add This
           ),
         ],
       ).padding(bottom: 15, left: 15, right: 15),

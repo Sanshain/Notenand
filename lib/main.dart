@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:ui'; //for mobile
+// import 'dart:ui'; //for mobile
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -18,8 +18,6 @@ import 'home.dart';
 
 
 final languageCodes = languages.keys;
-
-
 
 
 void main() async {
@@ -63,6 +61,8 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
+    localeApp.value = locale.value;
 
     // final materialApp = MaterialApp(
     //   title: 'Hand Note',

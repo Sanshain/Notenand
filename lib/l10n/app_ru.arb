@@ -1,6 +1,28 @@
 {
   "appTitle": "Заметки",
 
+  "settingsTitle": "Настройки",
+  "settings__uncategorizedList": "В главном списке только заметки без категорий",
+  "settings__emailPlaceholder": "Ваш email",
+  "settings__defaultCategory": "Категория по умолчанию",
+  "settings__language": "Язык",
+  "settings__darkTheme": "Темная тема",
+
+  "settings__resetButton": "Сбросить к настройкам по умолчанию",
+  "settings__saveButton": "Сохранить",
+
+  "aboutTitle": "О нас",
+  "exitButton": "Выйти",
+
+  "addCategoryButton": "Добавить категорию",
+  "all": "Все",
+  "uncategorized": "Вне категорий",
+  "archive": "Архив",
+
+  "newNote": "Новая запись",
+  "editing": "Редактирование...",
+  "noteEditPlaceholder": "Введите свою заявку здесь... :)",
+
   "hello": "Hello {userName}",
   "@hello": {
     "description": "A message with a single parameter",

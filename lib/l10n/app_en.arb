@@ -3,10 +3,53 @@
   "@appTitle": {
     "description": "AppBar title of main page if list is not filtered"
   },
-  "pushCount": "You have pushed the button this many times:",
-  "@pushCount": {
-    "description": "How many times the button has been pushed"
+
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "settings page title"
   },
+  "settings__uncategorizedList": "Just uncategorized notes in common list",
+  "@settings__uncategorizedList": {
+    "description": "First settings point"
+  },
+  "settings__emailPlaceholder": "Enter e-mail",
+  "@settings__emailPlaceholder": {
+    "description": "e-mail input field placeholder"
+  },
+  "settings__defaultCategory": "Default opening category",
+  "settings__darkTheme": "Dark theme",
+  "@settings__darkTheme": {
+    "description": "default theme option"
+  },
+  "settings__language": "Language",
+  "@settings__language": {
+    "description": "default language option"
+  },
+
+  "settings__resetButton": "Reset",
+  "@settings__resetButton": {
+    "description": "Reset button for settings"
+  },
+  "settings__saveButton": "Save",
+  "@settings__saveButton": {
+    "description": "Save button for settings page"
+  },
+
+  "aboutTitle": "About",
+  "@aboutTitle": { "description": "about page title" },
+
+  "exitButton": "Exit",
+  "@exitButton": { "description": "exit button title" },
+
+  "addCategoryButton": "Add category",
+  "@addCategoryButton": {"description":  "add category button"},
+  "all": "All",
+  "uncategorized": "Uncategorized",
+  "archive": "Archive",
+
+  "newNote": "New note",
+  "editing": "Editing...",
+  "noteEditPlaceholder": "Enter your entry here...",
 
   "hello": "Hello {userName}",
   "@hello": {
