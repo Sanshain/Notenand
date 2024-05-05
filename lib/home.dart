@@ -11,8 +11,11 @@ import 'package:note_hand/widgets/alerts/yesno.dart';
 import 'package:note_hand/widgets/extensions_.dart';
 import 'package:note_hand/widgets/menu.dart';
 import 'package:provider/provider.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:styled_widget/styled_widget.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, this.title = 'Notes'});
@@ -80,7 +83,11 @@ class HomePageState extends State<HomePage> {
         // backgroundColor: Theme.of(context).colorScheme.surfaceVariant,      // light gray
         // backgroundColor: Theme.of(context).colorScheme.inverseSurface,      // dark mode
         // backgroundColor: Theme.of(context).colorScheme.inversePrimary,   // violent
-        title: Text(usedCategory?.name ?? (inArchive ? 'Archive' : widget.title)),
+        title: Text(
+            usedCategory?.name ?? (
+                inArchive ? 'Archive' : (AppLocalizations.of(context)?.appTitle ?? widget.title)
+            )
+        ),
         actions: [
           Menu(
             hideBase: selected.isNotEmpty || (usedCategory != null),

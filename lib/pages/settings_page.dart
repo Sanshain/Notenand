@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:note_hand/utils/langs.dart';
 import 'package:note_hand/widgets/extensions_.dart';
 import 'package:provider/provider.dart';
 import 'package:styled_widget/styled_widget.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:note_hand/widgets/extensions_.dart';
 
 import '../store/__data.dart';
@@ -16,7 +18,11 @@ import '../widgets/switch_field.dart';
 
 
 
+
+final ValueNotifier<Locale?> localeApp = ValueNotifier<Locale?>(null);
+
 Box<dynamic>? settingsDb;
+
 
 class SettingsPage extends StatefulWidget {
     const SettingsPage({super.key});
@@ -63,6 +69,8 @@ class EntryState extends State<SettingsPage> {
         final settings = settingsStore!.state;
 
         final categoriesList = Provider.of<CategoriesNotifier>(context);
+
+        final localeName = AppLocalizations.of(context)!.localeName;
 
         return Scaffold(
             appBar: AppBar(
@@ -130,9 +138,10 @@ class EntryState extends State<SettingsPage> {
 
                 },),
 
-                DropDownField('Language', const ['English', 'Russian', ],
+                DropDownField('Language', languages.values.toList(),
                     // defaultValue: settings.language,
-                    defaultValue: settings.language,
+                    defaultValue: settings.language.isEmpty ? languages[localeName]! : settings.language,
+                    // defaultValue: AppLocalizations.of(context)?.localeName,
                     color: settings.language == 'English' ? Colors.black38 : Colors.black,
                     onChange: (_) {
                         if (_ != null) {
@@ -144,6 +153,14 @@ class EntryState extends State<SettingsPage> {
 
                             settings.language = _;
                             settingsStore!.updateAll();
+
+                            localeApp.value = Locale(
+                                settings.language.substring(0, 2).toLowerCase()
+                            );
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Required to reload app to apply language changing'))
+                            );
                         }
                     },
                 ),

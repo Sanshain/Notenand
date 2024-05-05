@@ -34,6 +34,12 @@ flutter run -d chrome --web-port 5555
 flutter run --release
 ```
 
+## Generates translation files:
+
+```sh
+flutter gen-l10n
+```
+
 ## Another branches:
 
 - **custom_value_notifier_$**: works fine, but requires a little bit template code

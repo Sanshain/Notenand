@@ -43,12 +43,14 @@ class SettingsNotifier extends ChangeNotifier{
 
     static Future<Settings> read() async {
         _store = _store ?? (await Hive.openBox<Settings>('settings'));
-        if (_store == null){
-            _store!.put('settings', _state = Settings());
+        _state = _state ?? _store!.get('settings');
+
+        if (_state == null){
+            await _store!.put('settings', _state = Settings());
         }
-        else {
-            _state = _state ?? _store!.get('settings');
-        }
+
+        // _state = _state ?? _store!.get('settings');
+
         return _state!;
     }
 }

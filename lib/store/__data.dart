@@ -70,7 +70,7 @@ class Settings extends HiveObject{
 
     @HiveField(2) String defaultCategory = '';
 
-    @HiveField(3) String language = 'English';
+    @HiveField(3) String language = '';
 
     @HiveField(4) String? email;
 

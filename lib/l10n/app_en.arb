@@ -1,0 +1,21 @@
+{
+  "appTitle": "Notes",
+  "@appTitle": {
+    "description": "AppBar title of main page if list is not filtered"
+  },
+  "pushCount": "You have pushed the button this many times:",
+  "@pushCount": {
+    "description": "How many times the button has been pushed"
+  },
+
+  "hello": "Hello {userName}",
+  "@hello": {
+    "description": "A message with a single parameter",
+    "placeholders": {
+      "userName": {
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  }
+}
